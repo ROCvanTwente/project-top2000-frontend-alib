@@ -83,7 +83,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <Image
-              src="/images/logo.png"
+              src="/images/logo_v2.png"
               alt="TOP2000 logo"
               width={140}
               height={48}
