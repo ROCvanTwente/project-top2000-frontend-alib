@@ -9,6 +9,7 @@ import { useAuth } from "./auth/AuthProvider";
 import Top5 from "./components/Top5";
 import QuickInfo from "./components/QuickInfo";
 import Carousel from "./components/Hero";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -55,6 +56,9 @@ export default function Home() {
         <Top5 selectedYear={2024} onSpotifyClick={() => {}} spotifyConnected={false} />
         <QuickInfo />
       </div>
+      <footer className="w-full">
+        <Footer />
+      </footer>
     </main>
   );
 }
