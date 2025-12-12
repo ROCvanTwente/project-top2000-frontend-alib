@@ -96,13 +96,13 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             <Link href="/" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Home
             </Link>
-            <Link href={`/year/${selectedYear}`} className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+            <Link href={`/top2000/`} className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Top2000
             </Link>
             <Link href="/artists" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Artists
             </Link>
-            <Link href="/songs" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+            <Link href="/songPage" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Songs
             </Link>
             <Link href="/statistics" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
@@ -138,23 +138,6 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
 
           {/* Year Selector & Spotify/User */}
           <div className="hidden md:flex items-center space-x-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
-                  {selectedYear} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="max-h-96 overflow-y-auto border-red-100">
-                {years.map((year) => (
-                  <DropdownMenuItem 
-                    key={year} 
-                    onClick={() => onYearChange(year)}
-                  >
-                    {year}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             {/* Spotify connect only when authenticated */}
             {/** will render a compact spotify icon button when logged in */}
@@ -181,9 +164,9 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               <Link href="/" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Home
               </Link>
-              <Link href={`/year/${selectedYear}`} className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
+              <Link href={`/top2000/${selectedYear}`} className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
                 Top2000
-              </Link>
+            </Link>
               <Link href="/artists" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Artists
               </Link>
@@ -203,21 +186,6 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                 Contact
               </Link>
             </nav>
-
-            <div className="mt-3 border-t border-red-100 pt-3">
-              <label className="block mb-1 text-neutral-700 text-sm">Year</label>
-              <select
-                value={selectedYear}
-                onChange={(e) => onYearChange(Number(e.target.value))}
-                className="w-full border border-neutral-300 rounded-md px-2 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div className="mt-3 border-t border-red-100 pt-3">
               {isAuthenticated && (
