@@ -9,10 +9,10 @@ export default function QuickInfo() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="mb-3 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-              Explore TOP2000
+              Ontdek TOP2000
             </h2>
             <p className="text-neutral-600 max-w-2xl mx-auto">
-              Discover the best music from over two decades of radio excellence
+              Ontdek de beste muziek uit meer dan twee decennia radiouitmuntendheid
             </p>
           </div>
 
@@ -30,9 +30,9 @@ export default function QuickInfo() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Calendar className="h-6 w-6 text-white transition-colors" />
                 </div>
-                <h3 className="mb-2 text-white transition-colors">Browse by Year</h3>
+                <h3 className="mb-2 text-white transition-colors">Zoeken op Jaar</h3>
                 <p className="text-red-100 transition-colors text-sm">
-                  Explore rankings from 1999 to 2024
+                  Bekijk ranglijsten van 1999 tot 2024
                 </p>
               </div>
               <div className="absolute bottom-4 right-4 z-10 w-8 h-8 bg-white rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
@@ -53,9 +53,9 @@ export default function QuickInfo() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Users className="h-6 w-6 text-white transition-colors" />
                 </div>
-                <h3 className="mb-2 text-white transition-colors">Artists</h3>
+                <h3 className="mb-2 text-white transition-colors">Artiesten</h3>
                 <p className="text-neutral-200 transition-colors text-sm">
-                  Discover all artists featured
+                  Ontdek alle uitgelichte artiesten
                 </p>
               </div>
               <div className="absolute bottom-4 right-4 z-10 w-8 h-8 bg-white rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
@@ -76,9 +76,9 @@ export default function QuickInfo() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Music className="h-6 w-6 text-white transition-colors" />
                 </div>
-                <h3 className="mb-2 text-white transition-colors">Songs</h3>
+                <h3 className="mb-2 text-white transition-colors">Nummers</h3>
                 <p className="text-orange-100 transition-colors text-sm">
-                  Browse all TOP2000 songs
+                  Blader door alle TOP2000 nummers
                 </p>
               </div>
               <div className="absolute bottom-4 right-4 z-10 w-8 h-8 bg-white rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
@@ -99,9 +99,9 @@ export default function QuickInfo() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <TrendingUp className="h-6 w-6 text-white transition-colors" />
                 </div>
-                <h3 className="mb-2 text-white transition-colors">Statistics</h3>
+                <h3 className="mb-2 text-white transition-colors">Statistieken</h3>
                 <p className="text-yellow-100 transition-colors text-sm">
-                  View charts and insights
+                  Bekijk grafieken en inzichten
                 </p>
               </div>
               <div className="absolute bottom-4 right-4 z-10 w-8 h-8 bg-white rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
@@ -126,7 +126,7 @@ export default function QuickInfo() {
                 </div>
                 <h3 className="mb-2 text-white transition-colors">Bart Arends</h3>
                 <p className="text-red-100 transition-colors text-sm">
-                  Learn about the presenters
+                  Meer informatie over de presentatoren
                 </p>
               </div>
               <div className="absolute bottom-4 right-4 z-10 w-8 h-8 bg-white rounded flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">

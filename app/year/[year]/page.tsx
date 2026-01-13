@@ -57,7 +57,7 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
     {
       image: 'https://images.unsplash.com/photo-1672841821756-fc04525771c2?w=1200',
       title: `TOP2000 ${currentYear}`,
-      subtitle: `Discover the ${songs.length} best songs of the year`
+      subtitle: `Ontdek de ${songs.length} beste nummers van het jaar`
     }
   ];
 
@@ -78,46 +78,46 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex items-center mb-4">
             <Filter className="h-5 w-5 mr-2 text-gray-600" />
-            <h3>Filters & Sorting</h3>
+            <h3>Filters & Sortering</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block mb-2">Filter by Artist</label>
+              <label className="block mb-2">Filteren op Artiest</label>
               <Input
-                placeholder="Search artist name..."
+                placeholder="Zoek artiestennaam..."
                 value={artistFilter}
                 onChange={(e) => setArtistFilter(e.target.value)}
               />
             </div>
 
             <div>
-              <label className="block mb-2">Sort By</label>
+              <label className="block mb-2">Sorteer Op</label>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="rank">Rank</SelectItem>
-                  <SelectItem value="artist">Artist Name</SelectItem>
-                  <SelectItem value="title">Song Title</SelectItem>
+                  <SelectItem value="rank">Rangschikking</SelectItem>
+                  <SelectItem value="artist">Artiestennaam</SelectItem>
+                  <SelectItem value="title">Nummer Titel</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="block mb-2">Display Limit</label>
+              <label className="block mb-2">Weergavelimiet</label>
               <Select value={displayCount.toString()} onValueChange={(value) => setDisplayCount(Number(value))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="100">100 songs</SelectItem>
-                  <SelectItem value="200">200 songs</SelectItem>
-                  <SelectItem value="300">300 songs</SelectItem>
-                  <SelectItem value="500">500 songs</SelectItem>
-                  <SelectItem value="1000">1000 songs</SelectItem>
-                  <SelectItem value="2000">2000 songs</SelectItem>
+                  <SelectItem value="100">100 nummers</SelectItem>
+                  <SelectItem value="200">200 nummers</SelectItem>
+                  <SelectItem value="300">300 nummers</SelectItem>
+                  <SelectItem value="500">500 nummers</SelectItem>
+                  <SelectItem value="1000">1000 nummers</SelectItem>
+                  <SelectItem value="2000">2000 nummers</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -132,7 +132,7 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
                 }}
                 className="w-full"
               >
-                Reset Filters
+                Filters Resetten
               </Button>
             </div>
           </div>
@@ -141,8 +141,8 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Showing {displayedSongs.length} of {songs.length} {songs.length === 1 ? 'song' : 'songs'}
-            {artistFilter && ` matching "${artistFilter}"`}
+            Toon {displayedSongs.length} van {songs.length} {songs.length === 1 ? 'nummer' : 'nummers'}
+            {artistFilter && ` passend op "${artistFilter}"`}
           </p>
         </div>
 
@@ -152,11 +152,11 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left">Rank</th>
-                  <th className="px-6 py-3 text-left">Song</th>
-                  <th className="px-6 py-3 text-left">Artist</th>
-                  <th className="px-6 py-3 text-left">Year</th>
-                  <th className="px-6 py-3 text-left">Actions</th>
+                  <th className="px-6 py-3 text-left">Rangschikking</th>
+                  <th className="px-6 py-3 text-left">Nummer</th>
+                  <th className="px-6 py-3 text-left">Artiest</th>
+                  <th className="px-6 py-3 text-left">Jaar</th>
+                  <th className="px-6 py-3 text-left">Acties</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -226,7 +226,7 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
                           className="hover:bg-green-50 hover:text-green-600 hover:border-green-600"
                         >
                           <Play className="h-4 w-4 mr-1" />
-                          Play
+                          Afspelen
                         </Button>
                       ) : (
                         <Button
@@ -234,7 +234,7 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
                           variant="outline"
                           onClick={onSpotifyClick}
                         >
-                          Connect to Play
+                          Verbind om af te spelen
                         </Button>
                       )}
                     </td>
@@ -296,20 +296,20 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
               onClick={() => setDisplayCount(prev => Math.min(prev + 100, songs.length))}
               className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
             >
-              Load More ({Math.min(100, songs.length - displayCount)} more songs)
+              Meer Laden ({Math.min(100, songs.length - displayCount)} nog meer nummers)
             </Button>
           </div>
         )}
 
         {songs.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600">No songs found matching your filters.</p>
+            <p className="text-gray-600">Geen nummers gevonden die aan je filters voldoen.</p>
             <Button
               variant="outline"
               onClick={() => setArtistFilter('')}
               className="mt-4"
             >
-              Clear Filters
+              Wis Filters
             </Button>
           </div>
         )}

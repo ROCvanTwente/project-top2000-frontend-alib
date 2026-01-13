@@ -11,13 +11,13 @@ export default function Footer() {
               <span className="font-bold">TOP2000</span>
             </div>
             <p className="text-neutral-300 mt-4 leading-relaxed">
-              The ultimate music countdown celebrating the best songs of all time.
+              De ultieme muziekcountdown die de beste nummers aller tijden viert.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-4 text-white">Quick Links</h3>
+            <h3 className="mb-4 text-white">Snelle Links</h3>
             <ul className="space-y-2.5">
               <li>
                 <Link href="/" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
@@ -28,19 +28,19 @@ export default function Footer() {
               <li>
                 <Link href="/artists" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  Artists
+                  Artiesten
                 </Link>
               </li>
               <li>
                 <Link href="/songs" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  Songs
+                  Nummers
                 </Link>
               </li>
               <li>
                 <Link href="/statistics" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  Statistics
+                  Statistieken
                 </Link>
               </li>
             </ul>
@@ -48,18 +48,18 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="mb-4 text-white">Resources</h3>
+            <h3 className="mb-4 text-white">Hulpmiddelen</h3>
             <ul className="space-y-2.5">
               <li>
                 <Link href="/history" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  History
+                  Geschiedenis
                 </Link>
               </li>
               <li>
                 <Link href="/faq" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  FAQ
+                  Veelgestelde Vragen
                 </Link>
               </li>
               <li>
@@ -71,7 +71,7 @@ export default function Footer() {
               <li>
                 <Link href="/playlists" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  My Playlists
+                  Mijn Afspeellijsten
                 </Link>
               </li>
             </ul>
@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-neutral-700 mt-10 pt-8 text-center">
-          <p className="text-neutral-400">&copy; {new Date().getFullYear()} TOP2000. All rights reserved.</p>
+          <p className="text-neutral-400">&copy; {new Date().getFullYear()} TOP2000. Alle rechten voorbehouden.</p>
         </div>
       </div>
     </footer>
