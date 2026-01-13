@@ -26,7 +26,7 @@ interface YearOverviewProps {
 export default function YearOverview({ selectedYear, onYearChange, onSpotifyClick, spotifyConnected }: YearOverviewProps) {
   const { year } = useParams();
   const router = useRouter();
-  const currentYear = year ? parseInt(year) : selectedYear;
+  const currentYear = year ? parseInt(Array.isArray(year) ? year[0] : year) : selectedYear;
 
   const [artistFilter, setArtistFilter] = useState('');
   const [sortBy, setSortBy] = useState('rank');
@@ -206,13 +206,13 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
                           alt={song.title}
                           className="w-12 h-12 rounded object-cover"
                         />
-                        <Link to={`/song/${song.id}`} className="hover:text-red-600 transition">
+                        <Link href={`/song/${song.id}`} className="hover:text-red-600 transition">
                           <span>{song.title}</span>
                         </Link>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <Link to={`/artist/${song.artistId}`} className="text-gray-600 hover:text-red-600 transition">
+                      <Link href={`/artist/${song.artistId}`} className="text-gray-600 hover:text-red-600 transition">
                         {song.artist}
                       </Link>
                     </td>
@@ -257,10 +257,10 @@ export default function YearOverview({ selectedYear, onYearChange, onSpotifyClic
                 
                 {/* Title and Artist */}
                 <div className="flex-1 min-w-0">
-                  <Link to={`/song/${song.id}`} className="hover:text-red-600 transition-colors duration-200 block">
+                  <Link href={`/song/${song.id}`} className="hover:text-red-600 transition-colors duration-200 block">
                     <h4 className="font-semibold line-clamp-1">{song.title}</h4>
                   </Link>
-                  <Link to={`/artist/${song.artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block">
+                  <Link href={`/artist/${song.artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block">
                     <p className="line-clamp-1 text-sm">{song.artist}</p>
                   </Link>
                 </div>

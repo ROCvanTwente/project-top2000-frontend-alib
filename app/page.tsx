@@ -10,6 +10,7 @@ import Top5 from "./components/Top5";
 import QuickInfo from "./components/QuickInfo";
 import Carousel from "./components/Hero";
 import Footer from "./components/Footer";
+import CallToActionCard from "./components/CallToActionCard";
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -53,6 +54,7 @@ export default function Home() {
       </div> */}
       <div className="flex w-full flex-col gap-3" id="MainContent">
         <Carousel />
+        {/* <CallToActionCard /> */}
         <Top5 selectedYear={2024} onSpotifyClick={() => {}} spotifyConnected={false} />
         <QuickInfo />
       </div>

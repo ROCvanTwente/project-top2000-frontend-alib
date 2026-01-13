@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Trophy, Music, Heart, Sparkles } from 'lucide-react';
 import { ImageWithFallback } from '../ImageWithFallback';
 
+import { getSongs } from '../../api/getSongs';
+
 interface CarouselSlide {
   image: string;
   title: string;

@@ -32,11 +32,11 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
             <div className="inline-block px-4 py-1.5 bg-red-100 rounded-full">
               <span className="text-red-700 font-semibold">Featured</span>
             </div>
-            <Link href={`/year/${selectedYear}`}>
-              <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
+            <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600" asChild>
+              <Link href={`/year/${selectedYear}`}>
                 View Full List
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
           <h2 className="mb-2 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
             Top 5 Songs of {selectedYear}
@@ -81,11 +81,11 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
                   <p className="text-xs line-clamp-1">{song.artist}</p>
                 </Link>
               </div>
-              <Link href={`/song/${song.id}`} className="shrink-0">
-                <Button size="sm" variant="outline" className="h-8 w-8 p-0 border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700">
+              <Button size="sm" variant="outline" className="h-8 w-8 p-0 border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700" asChild>
+                <Link href={`/song/${song.id}`} className="shrink-0">
                   <ArrowUpRight className="h-4 w-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           ))}
         </div>
