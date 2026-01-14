@@ -12,7 +12,7 @@ export default function LogoutPage() {
 
   return (
     <div>
-      <div>Signing out...</div>
+      <div>Bezig met uitloggen...</div>
     </div>
   );
 }
