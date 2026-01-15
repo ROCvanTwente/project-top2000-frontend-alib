@@ -7,9 +7,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
           <div>
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-md inline-block mb-4 shadow-lg">
-              <span className="font-bold">TOP2000</span>
-            </div>
+            <Link href="/">
+              <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
+            </Link>
             <p className="text-neutral-300 mt-4 leading-relaxed">
               De ultieme muziekcountdown die de beste nummers aller tijden viert.
             </p>
