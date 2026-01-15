@@ -29,9 +29,9 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
       {isAuthenticated && (
         <button
           onClick={onSpotifyClick}
-          aria-label="Connect Spotify"
+          aria-label="Verbind Spotify"
           className="p-2 flex items-center justify-center text-[#1ED760] hover:text-[#17c44f] transition transform duration-150 ease-in-out hover:scale-105 cursor-pointer"
-          title="Connect Spotify"
+          title="Verbind Spotify"
         >
           <FaSpotify className="h-5 w-5" />
         </button>
@@ -48,19 +48,19 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
           {!isAuthenticated ? (
             <>
               <DropdownMenuItem asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">Inloggen</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/register">Register</Link>
+                <Link href="/register">Registreren</Link>
               </DropdownMenuItem>
             </>
           ) : (
             <>
               <DropdownMenuItem asChild>
-                <Link href="/profile">Profile</Link>
+                <Link href="/profile">Profiel</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => logout()}>
-                <div className="flex items-center space-x-2"><LogOut className="h-4 w-4" /><span>Logout</span></div>
+                <div className="flex items-center space-x-2"><LogOut className="h-4 w-4" /><span>Uitloggen</span></div>
               </DropdownMenuItem>
             </>
           )}
@@ -82,9 +82,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-md shadow-md shadow-red-200/50 group-hover:shadow-lg group-hover:shadow-red-300/50 transition-all duration-300 group-hover:scale-105">
-              <span className="font-bold tracking-tight">TOP2000</span>
-            </div>
+            <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -96,16 +94,16 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               Top2000
             </Link>
             <Link href="/artists" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-              Artists
+              Artiesten
             </Link>
             <Link href="/songs" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-              Songs
+              Nummers
             </Link>
             <Link href="/statistics" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-              Statistics
+              Statistieken
             </Link>
             <Link href="/history" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-              History
+              Geschiedenis
             </Link>
             
             {/* Bart Arends DJ Dropdown */}
@@ -222,7 +220,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                   className="w-full flex items-center justify-center gap-2 px-2 py-2 rounded-md text-[#1ED760] hover:bg-green-50 transition-colors duration-150 ease-in-out hover:text-[#17c44f] cursor-pointer text-sm"
                 >
                   <FaSpotify className="h-5 w-5" />
-                  Connect Spotify
+                  Verbind Spotify
                 </button>
               )}
 
@@ -230,19 +228,19 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                 {!isAuthenticated ? (
                   <>
                     <Link href="/login" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm" onClick={() => setMobileMenuOpen(false)}>
-                      Login
+                      Inloggen
                     </Link>
                     <Link href="/register" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm" onClick={() => setMobileMenuOpen(false)}>
-                      Register
+                      Registreren
                     </Link>
                   </>
                 ) : (
                   <>
                     <Link href="/profile" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm" onClick={() => setMobileMenuOpen(false)}>
-                      Profile
+                      Profiel
                     </Link>
                     <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full text-left px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm">
-                      Logout
+                      Uitloggen
                     </button>
                   </>
                 )}

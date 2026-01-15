@@ -47,7 +47,7 @@ export default function RegisterPage() {
   return (
     <main className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4 bg-muted">
       <div className="w-full max-w-md bg-card rounded-lg shadow p-8">
-        <h2 className="text-2xl font-semibold mb-4">Create account</h2>
+        <h2 className="text-2xl font-semibold mb-4">Account maken</h2>
 
         {generalErrors && generalErrors.length > 0 ? (
           <div className="mb-4">
@@ -59,7 +59,7 @@ export default function RegisterPage() {
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-sm mb-1">E-mail</label>
             <input
               className="w-full px-3 py-2 border rounded"
               value={email}
@@ -71,7 +71,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Password</label>
+            <label className="block text-sm mb-1">Wachtwoord</label>
             <input
               className="w-full px-3 py-2 border rounded"
               type="password"
@@ -83,7 +83,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Confirm password</label>
+            <label className="block text-sm mb-1">Bevestig wachtwoord</label>
             <input
               className="w-full px-3 py-2 border rounded"
               type="password"
@@ -100,10 +100,10 @@ export default function RegisterPage() {
               disabled={loading}
               className="px-4 py-2 rounded bg-primary text-primary-foreground disabled:opacity-60"
             >
-              {loading ? "Creating..." : "Create account"}
+              {loading ? "Bezig met maken..." : "Account maken"}
             </button>
 
-            <Link href="/login" className="text-sm text-muted-foreground">Already have an account?</Link>
+            <Link href="/login" className="text-sm text-muted-foreground">Al een account?</Link>
           </div>
         </form>
       </div>

@@ -19,8 +19,8 @@ export default function Artist() {
     const carouselSlides = [
     {
       image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200',
-      title: 'All Artists',
-      subtitle: 'Explore every artist in the TOP2000'
+      title: 'Alle Artiesten',
+      subtitle: 'Verken elke artiest in de TOP2000'
     }
   ];
     return (
@@ -32,10 +32,10 @@ export default function Artist() {
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <div className="flex items-center mb-4">
                     <Search className="h-5 w-5 mr-2 text-gray-600" />
-                    <h3>Search Artists</h3>
+                    <h3>Zoeken naar Artiesten</h3>
                 </div>
                 <Input
-                    placeholder="Search by artist name..."
+                    placeholder="Zoeken op artiestennaam..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="max-w-md"
@@ -45,8 +45,8 @@ export default function Artist() {
                 {/* Results Count */}
                 <div className="mb-6">
                 <p className="text-gray-600">
-                    Showing {filteredArtists.length} {filteredArtists.length === 1 ? 'artist' : 'artists'}
-                    {searchTerm && ` matching "${searchTerm}"`}
+                    Toon {filteredArtists.length} {filteredArtists.length === 1 ? 'artiest' : 'artiesten'}
+                    {searchTerm && ` passend op "${searchTerm}"`}
                 </p>
                 </div>
 
@@ -68,7 +68,7 @@ export default function Artist() {
                     <div className="p-4">
                         <h4 className="mb-2 group-hover:text-red-600 transition">{artist.name}</h4>
                         <p className="text-gray-600">
-                        {artist.songCount} {artist.songCount === 1 ? 'song' : 'songs'} in TOP2000
+                        {artist.songCount} {artist.songCount === 1 ? 'nummer' : 'nummers'} in TOP2000
                         </p>
                     </div>
                     <div className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded shadow-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -80,7 +80,7 @@ export default function Artist() {
 
                 {filteredArtists.length === 0 && (
                 <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-                    <p className="text-gray-600">No artists found matching "{searchTerm}"</p>
+                    <p className="text-gray-600">Geen artiesten gevonden passend op \"{searchTerm}\"</p>
                 </div>
                 )}
             </div>
