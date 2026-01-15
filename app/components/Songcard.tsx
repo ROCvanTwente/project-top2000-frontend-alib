@@ -54,7 +54,7 @@ export default function SongCard({
           )}
         </div>
         <div className="p-4">
-          <Link href={`/song/${id}`} className="hover:text-red-600 transition-colors duration-200 block">
+          <Link href={`/songDetails/${id}`} className="hover:text-red-600 transition-colors duration-200 block">
             <h4 className="mb-1.5 font-semibold">{title}</h4>
           </Link>
           <div className="flex items-center justify-between">
@@ -62,7 +62,7 @@ export default function SongCard({
               <p className="line-clamp-1">{artist}</p>
             </Link>
             {!canPlay && (
-              <Link href={`/song/${id}`} className="ml-2">
+              <Link href={`/songDetails/${id}`} className="ml-2">
                 <Button size="sm" variant="outline" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700">
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
