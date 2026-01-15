@@ -82,9 +82,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-md shadow-md shadow-red-200/50 group-hover:shadow-lg group-hover:shadow-red-300/50 transition-all duration-300 group-hover:scale-105">
-              <span className="font-bold tracking-tight">TOP2000</span>
-            </div>
+            <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

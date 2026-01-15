@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "./components/Header";
 import LoadingBar from "react-top-loading-bar";
+import Footer from "./components/Footer";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
@@ -50,6 +51,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       />
 
       <div>{children}</div>
+      
+      <footer className="w-full">
+        <Footer />
+      </footer>
     </>
   );
 }
