@@ -117,7 +117,7 @@ export default function Top2000Table() {
     setDisplayLimit(100);
     setDisplayCount(100);
 
-    const res = await fetch(`https://localhost:7003/top2000/${yr}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/top2000/${yr}`);
     const json = await res.json();
 
     let fetchedData: Top2000Entry[] = [];
