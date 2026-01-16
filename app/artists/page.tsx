@@ -12,9 +12,8 @@ type Artist = {
   artistName: string;
   photo: string;
 
-  // ✅ jouw API: count zit in stats
   stats?: {
-    totalSongInTop2000?: number;
+    totalSongsInTop2000?: number;
   };
 };
 
@@ -24,7 +23,6 @@ export default function Artist() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ pagination
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
@@ -71,7 +69,6 @@ export default function Artist() {
     );
   }, [allArtists, searchTerm]);
 
-  // ✅ bij zoeken terug naar pagina 1
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -80,7 +77,6 @@ export default function Artist() {
     return Math.max(1, Math.ceil(filteredArtists.length / ITEMS_PER_PAGE));
   }, [filteredArtists.length]);
 
-  // ✅ als currentPage buiten range valt (bijv. na nieuwe data), fixen
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
   }, [currentPage, totalPages]);
@@ -145,8 +141,7 @@ export default function Artist() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {paginatedArtists.map((artist) => {
-                // ✅ pak count uit stats.totalSongInTop2000 (met fallback)
-            const count = (artist.stats?.totalSongInTop2000 != null) ? parseInt(artist.stats?.totalSongInTop2000) : 0;
+            const count = artist.stats?.totalSongsInTop2000 ?? 0;
 
                 return (
                   <div
