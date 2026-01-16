@@ -1,6 +1,8 @@
 // components/Top2000Table.tsx
 "use client";
 
+import LoadingState from "./ui/LoadingState";
+import ErrorState from "./ui/ErrorState";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -10,6 +12,8 @@ import {
   Minus,
   Sparkles,
   Play,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 
 type Top2000Entry = {
@@ -89,6 +93,7 @@ export default function Top2000Table() {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [data, setData] = useState<Top2000Entry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters
   const [filterText, setFilterText] = useState("");
@@ -112,20 +117,34 @@ export default function Top2000Table() {
 
   const fetchYear = async (yr: number) => {
     setLoading(true);
+    setError(null);
     setFilterText("");
     setSortOption("Rank");
     setDisplayLimit(100);
     setDisplayCount(100);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/top2000/${yr}`);
-    const json = await res.json();
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/top2000/${yr}`);
+      if (!res.ok) {
+        throw new Error(`API fout: ${res.status} ${res.statusText}`);
+      }
 
-    let fetchedData: Top2000Entry[] = [];
-    if (Array.isArray(json)) fetchedData = json;
-    else if (Array.isArray(json.songs)) fetchedData = json.songs;
+      const json = await res.json();
 
-    setData(fetchedData.sort((a, b) => a.position - b.position));
-    setLoading(false);
+      let fetchedData: Top2000Entry[] = [];
+      if (Array.isArray(json)) fetchedData = json;
+      else if (Array.isArray(json.songs)) fetchedData = json.songs;
+
+      setData(fetchedData.sort((a, b) => a.position - b.position));
+    } catch (e: any) {
+      setData([]);
+      setError(
+        e?.message ??
+        "Onbekende fout bij het ophalen van de TOP2000. Probeer het later opnieuw."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -180,42 +199,27 @@ export default function Top2000Table() {
     setDisplayCount(100);
   };
 
-if (loading) {
+  if (loading) {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center px-6">
-        {/* Spinner */}
-        <div className="relative mx-auto mb-8 w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-red-500/30"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-red-600 border-t-transparent animate-spin"></div>
-        </div>
-
-        {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-3">
-          TOP2000 {selectedYear}
-        </h2>
-
-        {/* Subtitle */}
-        <p className="text-neutral-600 text-base md:text-lg">
-          Nummers worden geladen…
-        </p>
-
-        {/* Subtle dots */}
-        <div className="mt-4 flex items-center justify-center gap-1">
-          <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce"></span>
-          <span
-            className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce"
-            style={{ animationDelay: "0.15s" }}
-          ></span>
-          <span
-            className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce"
-            style={{ animationDelay: "0.3s" }}
-          ></span>
-        </div>
-      </div>
-    </div>
+    <LoadingState
+      title={`TOP2000 ${selectedYear}`}
+      subtitle="Nummers worden geladen…"
+    />
   );
 }
+
+
+ if (error) {
+  return (
+    <ErrorState
+      title="Oeps… we kunnen de TOP2000 niet laden"
+      message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
+      error={error}
+      issue="top2000-load-error"
+    />
+  );
+}
+
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -486,9 +490,7 @@ if (loading) {
                     href={`/song/${song.songId}`}
                     className="hover:text-red-600 transition-colors block"
                   >
-                    <h4 className="font-semibold line-clamp-1">
-                      {song.titel}
-                    </h4>
+                    <h4 className="font-semibold line-clamp-1">{song.titel}</h4>
                   </Link>
                   <Link
                     href={`/artist/${song.artistId}`}
@@ -529,7 +531,9 @@ if (loading) {
           <div className="mt-8 text-center">
             <button
               onClick={() =>
-                setDisplayCount((prev) => Math.min(prev + 100, limitedData.length))
+                setDisplayCount((prev) =>
+                  Math.min(prev + 100, limitedData.length)
+                )
               }
               className="px-4 py-2 border rounded-lg border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
             >
