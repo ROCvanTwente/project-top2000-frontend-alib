@@ -43,7 +43,7 @@ export default function SongDetails({ songId }: { songId: string }) {
         setFout(null);
 
         const res = await fetch(
-          `https://localhost:7003/song/details?id=${encodeURIComponent(songId)}`
+          `${process.env.NEXT_PUBLIC_API_URL}/song/details?id=${encodeURIComponent(songId)}`
         );
 
         if (res.status === 404) {
