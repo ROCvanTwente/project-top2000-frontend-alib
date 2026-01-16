@@ -25,14 +25,13 @@ interface Top2000Entry {
   songImg: string;
 }
 
-export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }: Top5Props) {
+export default function Top5({ onSpotifyClick, spotifyConnected }: Top5Props) {
   const [data, setData] = useState<Top2000Entry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentYear, setCurrentYear] = useState(selectedYear);
 
-  const fetchData = (year: number) => {
+  const fetchData = () => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/top5/${year}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/top5/2025`)
       .then(async (res) => {
         
         const json = await res.json();
@@ -52,7 +51,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
   };
 
   useEffect(() => {
-    fetchData(currentYear);
+    fetchData();
   }, []);
 
   const handlePlay = (songId: string) => {
@@ -74,13 +73,13 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
               <span className="text-red-700 font-semibold">Uitgelicht</span>
             </div>
             <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600" asChild>
-              <Link href={`/year/${selectedYear}`}>
+              <Link href={`/year/2025`}>
                 Volledige Lijst Bekijken
               </Link>
             </Button>
           </div>
           <h2 className="mb-2 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-            Top 5 Nummers van {selectedYear}
+            Top 5 Nummers van 2025
           </h2>
           <p className="text-neutral-600">De best geclassificeerde nummers dit jaar</p>
         </div>
