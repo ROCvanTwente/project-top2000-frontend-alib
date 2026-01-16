@@ -58,9 +58,6 @@ export default function Home() {
         <Top5 selectedYear={2024} onSpotifyClick={() => {}} spotifyConnected={false} />
         <QuickInfo />
       </div>
-      <footer className="w-full">
-        <Footer />
-      </footer>
     </main>
   );
 }

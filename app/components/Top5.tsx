@@ -71,20 +71,18 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
         <div className="mb-10">
           <div className="flex items-center justify-between mb-3">
             <div className="inline-block px-4 py-1.5 bg-red-100 rounded-full">
-              <span className="text-red-700 font-semibold">Featured</span>
+              <span className="text-red-700 font-semibold">Uitgelicht</span>
             </div>
             <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600" asChild>
-              <Link href={`/year/${currentYear}`}>
-                View Full List
+              <Link href={`/year/${selectedYear}`}>
+                Volledige Lijst Bekijken
               </Link>
             </Button>
           </div>
-          <div className="flex items-center gap-4 mb-2">
-            <h2 className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-              Top 5 Songs of <strong>{currentYear}</strong>
-            </h2>
-          </div>
-          <p className="text-neutral-600">The highest ranked songs this year</p>
+          <h2 className="mb-2 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+            Top 5 Nummers van {selectedYear}
+          </h2>
+          <p className="text-neutral-600">De best geclassificeerde nummers dit jaar</p>
         </div>
 
         {loading ? (

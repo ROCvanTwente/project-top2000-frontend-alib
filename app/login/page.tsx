@@ -46,7 +46,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4 bg-muted">
       <div className="w-full max-w-md bg-card rounded-lg shadow p-8">
-        <h2 className="text-2xl font-semibold mb-4">Sign in</h2>
+        <h2 className="text-2xl font-semibold mb-4">Inloggen</h2>
 
         {generalErrors && generalErrors.length > 0 ? (
           <div className="mb-4">
@@ -58,7 +58,7 @@ export default function LoginPage() {
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-sm mb-1">E-mail</label>
             <input
               className="w-full px-3 py-2 border rounded"
               value={email}
@@ -70,7 +70,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Password</label>
+            <label className="block text-sm mb-1">Wachtwoord</label>
             <input
               className="w-full px-3 py-2 border rounded"
               type="password"
@@ -87,10 +87,10 @@ export default function LoginPage() {
               disabled={loading}
               className="px-4 py-2 rounded bg-primary text-primary-foreground disabled:opacity-60"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Bezig met inloggen..." : "Inloggen"}
             </button>
 
-            <Link href="/register" className="text-sm text-muted-foreground">Create account</Link>
+            <Link href="/register" className="text-sm text-muted-foreground">Account maken</Link>
           </div>
         </form>
       </div>

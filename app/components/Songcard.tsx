@@ -74,7 +74,7 @@ export default function SongCard({
               {onPlay && (
                 <Button onClick={onPlay} size="sm" variant="outline" className="flex-1 border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700">
                   <Play className="h-4 w-4 mr-1.5" />
-                  Play
+                  Afspelen
                 </Button>
               )}
               <Link href={`/song/${id}`}>
