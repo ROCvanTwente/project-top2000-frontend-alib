@@ -13,7 +13,6 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import Artist from "../artists/page";
 
 type ChartPointDto = { year: number; position: number };
 
@@ -40,6 +39,14 @@ export default function SongDetails({ songId }: { songId: string }) {
   const [laden, setLaden] = useState(true);
   const [fout, setFout] = useState<string | null>(null);
 
+  // ✅ Songtekst button (rechtsboven) -> open URL of modal
+  const [lyricsOpen, setLyricsOpen] = useState(false);
+
+  const lyricsIsUrl = useMemo(() => {
+    const t = (data?.lyrics ?? "").trim();
+    return /^https?:\/\//i.test(t);
+  }, [data?.lyrics]);
+
   useEffect(() => {
     const run = async () => {
       try {
@@ -47,7 +54,9 @@ export default function SongDetails({ songId }: { songId: string }) {
         setFout(null);
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/song/details?id=${encodeURIComponent(songId)}`
+          `${process.env.NEXT_PUBLIC_API_URL}/song/details?id=${encodeURIComponent(
+            songId
+          )}`
         );
 
         if (res.status === 404) {
@@ -76,10 +85,12 @@ export default function SongDetails({ songId }: { songId: string }) {
           artistBiography: raw.artistBiography ?? raw.ArtistBiography ?? null,
           lyrics: raw.lyrics ?? raw.Lyrics ?? null,
           releaseYear: raw.releaseYear ?? raw.ReleaseYear ?? null,
-          chartHistory: (raw.chartHistory ?? raw.ChartHistory ?? []).map((p: any) => ({
-            year: p.year ?? p.Year,
-            position: p.position ?? p.Position,
-          })),
+          chartHistory: (raw.chartHistory ?? raw.ChartHistory ?? []).map(
+            (p: any) => ({
+              year: p.year ?? p.Year,
+              position: p.position ?? p.Position,
+            })
+          ),
         };
 
         setData(dto);
@@ -103,11 +114,6 @@ export default function SongDetails({ songId }: { songId: string }) {
   const bestePositie = useMemo(() => {
     if (!chartData.length) return null;
     return Math.min(...chartData.map((p) => p.position));
-  }, [chartData]);
-
-  const slechtstePositie = useMemo(() => {
-    if (!chartData.length) return null;
-    return Math.max(...chartData.map((p) => p.position));
   }, [chartData]);
 
   if (laden) {
@@ -143,7 +149,7 @@ export default function SongDetails({ songId }: { songId: string }) {
       {/* HERO (rood i.p.v. blauw/paars) */}
       <div className="bg-gradient-to-r from-red-700 via-red-600 to-neutral-900">
         <div className="max-w-6xl mx-auto px-6 py-8 flex gap-6 items-center">
-          {/* Cover placeholder (details DTO heeft geen imgUrl) */}
+          {/* Cover placeholder */}
           <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-white/10 flex-shrink-0 border border-white/10">
             {data.imgUrl ? (
               <img
@@ -159,27 +165,20 @@ export default function SongDetails({ songId }: { songId: string }) {
           </div>
 
           <div className="flex-1 text-white">
-            <h1 className="text-2xl font-semibold">
-              {veiligeTekst(data.titel)}
-            </h1>
+            <h1 className="text-2xl font-semibold">{veiligeTekst(data.titel)}</h1>
             <p className="text-white/90 mt-1">
               {veiligeTekst(data.artistName, "Onbekende artiest")}
             </p>
             <p className="text-white/80 text-sm mt-1">
-              {data.releaseYear
-                ? `Uitgebracht: ${data.releaseYear}`
-                : "Uitgebracht: —"}
+              {data.releaseYear ? `Uitgebracht: ${data.releaseYear}` : "Uitgebracht: —"}
             </p>
 
-            {/* ✅ Buttons met iconen + wit (zichtbaar) */}
             <div className="mt-5 flex flex-wrap gap-3">
-              {/* Spotify */}
               <button
                 type="button"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
                 onClick={() => console.log("Spotify koppelen (dummy)")}
               >
-                {/* Spotify logo (SVG) */}
                 <svg
                   width="20"
                   height="20"
@@ -191,13 +190,14 @@ export default function SongDetails({ songId }: { songId: string }) {
                 </svg>
               </button>
 
+
+
               {/* YouTube */}
               <button
                 type="button"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
                 onClick={() => console.log("YouTube openen (dummy)")}
               >
-                {/* YouTube logo (SVG) */}
                 <svg
                   width="22"
                   height="22"
@@ -209,13 +209,11 @@ export default function SongDetails({ songId }: { songId: string }) {
                 </svg>
               </button>
 
-              {/* Playlist */}
               <button
                 type="button"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
                 onClick={() => console.log("Toevoegen aan playlist (dummy)")}
               >
-                {/* Plus icoon */}
                 <svg
                   width="18"
                   height="18"
@@ -232,29 +230,64 @@ export default function SongDetails({ songId }: { songId: string }) {
         </div>
       </div>
 
-      {/* CONTENT */}
       <div className="max-w-6xl mx-auto p-6">
-        {/* Chart card */}
         <div className="bg-white rounded-xl shadow-sm border p-5">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-lg font-semibold">Hitlijstgeschiedenis</h2>
-            <div className="text-sm text-gray-600">
-              {aantalKeerInTop2000 ? (
-                <>
-                  Keer in TOP2000:{" "}
-                  <span className="font-semibold">{aantalKeerInTop2000}</span> •
-                  Beste positie:{" "}
-                  <span className="font-semibold text-red-600">
-                    #{bestePositie}
-                  </span>
-                </>
+
+            <div className="flex items-center gap-3 flex-wrap justify-end">
+              <div className="text-sm text-gray-600">
+                {aantalKeerInTop2000 ? (
+                  <>
+                    Keer in TOP2000:{" "}
+                    <span className="font-semibold">{aantalKeerInTop2000}</span> •
+                    Beste positie:{" "}
+                    <span className="font-semibold text-red-600">
+                      #{bestePositie}
+                    </span>
+                  </>
+                ) : (
+                  "Geen hitlijstgegevens"
+                )}
+              </div>
+
+              {lyricsIsUrl ? (
+                <Link
+                  href={(data.lyrics ?? "").trim()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition"
+                >
+                  Songtekst
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z" />
+                    <path d="M5 5h7v2H7v10h10v-5h2v7H5V5z" />
+                  </svg>
+                </Link>
               ) : (
-                "Geen hitlijstgegevens"
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setLyricsOpen(true)}
+                  disabled={!((data.lyrics ?? "").trim().length)}
+                  title={
+                    (data.lyrics ?? "").trim().length
+                      ? "Bekijk songtekst"
+                      : "Geen songtekst beschikbaar"
+                  }
+                >
+                  Songtekst
+                </button>
               )}
             </div>
           </div>
 
-          {/* ✅ compacte chart */}
           <div className="mt-4 h-[180px]">
             {chartData.length ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -270,7 +303,6 @@ export default function SongDetails({ songId }: { songId: string }) {
                     fontSize={12}
                     allowDecimals={false}
                   />
-                  {/* positie: lager is beter → reversed */}
                   <YAxis
                     reversed
                     tickLine={false}
@@ -303,62 +335,47 @@ export default function SongDetails({ songId }: { songId: string }) {
           </div>
         </div>
 
-        {/* Onderste grid */}
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Lyrics */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border p-5">
-            <h3 className="text-lg font-semibold">Songtekst</h3>
-            <div className="mt-3 whitespace-pre-wrap text-gray-800 leading-relaxed">
-              {veiligeTekst(data.lyrics, "Geen songtekst beschikbaar.")}
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-start gap-4">
+              <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                {data.photo ? (
+                  <Image
+                    src={data.photo}
+                    alt={veiligeTekst(data.artistName, "Artiest")}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                    —
+                  </div>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-semibold">Over de artiest</h3>
+                <div className="mt-1 font-semibold text-gray-900">
+                  {veiligeTekst(data.artistName, "Onbekende artiest")}
+                </div>
+
+                <div className="mt-3 text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {veiligeTekst(data.artistBiography, "Geen biografie beschikbaar.")}
+                </div>
+
+                <div className="mt-5">
+                  <Link
+                    href={`/artistsDetails/${data.artistId}`}
+                    className="inline-flex items-center justify-center w-full border rounded-md px-3 py-2 text-sm hover:bg-gray-50 transition"
+                  >
+                    <span className="font-medium">Bekijk artiestprofiel</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Right column */}
           <div className="space-y-6">
-            {/* About artist */}
-            <div className="bg-white rounded-xl shadow-sm border p-5">
-              <h3 className="text-lg font-semibold">Over de artiest</h3>
-
-              <div className="mt-3 flex gap-3 items-start">
-                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  {data.photo ? (
-                    <Image
-                      src={data.photo}
-                      alt={veiligeTekst(data.artistName, "Artiest")}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                      —
-                    </div>
-                  )}
-                </div>
-
-                <div className="min-w-0">
-                  <div className="font-semibold">
-                    {veiligeTekst(data.artistName, "Onbekende artiest")}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1 line-clamp-4">
-                    {veiligeTekst(
-                      data.artistBiography,
-                      "Geen biografie beschikbaar."
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <button className="mt-4 w-full border rounded-md px-3 py-2 text-sm hover:bg-gray-50 transition">
-                <Link
-                          href={`/artistsDetails/${data.artistId}`}
-                          className="hover:text-red-600 transition"
-                        >
-                          <span className="font-medium">Bekijk artiestprofiel</span>
-                        </Link>
-              </button>
-            </div>
-
-            {/* Song details */}
             <div className="bg-white rounded-xl shadow-sm border p-5">
               <h3 className="text-lg font-semibold">Nummergegevens</h3>
 
@@ -401,6 +418,31 @@ export default function SongDetails({ songId }: { songId: string }) {
             </div>
           </div>
         </div>
+
+        {lyricsOpen && !lyricsIsUrl && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <button
+              aria-label="Close"
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setLyricsOpen(false)}
+            />
+            <div className="relative z-10 w-[min(900px,92vw)] max-h-[80vh] bg-white rounded-xl shadow-lg border overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b">
+                <div className="font-semibold">Songtekst</div>
+                <button
+                  type="button"
+                  className="px-3 py-1 rounded-md border hover:bg-gray-50"
+                  onClick={() => setLyricsOpen(false)}
+                >
+                  Sluiten
+                </button>
+              </div>
+              <div className="p-5 overflow-auto whitespace-pre-wrap text-gray-800 leading-relaxed">
+                {veiligeTekst(data.lyrics, "Geen songtekst beschikbaar.")}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

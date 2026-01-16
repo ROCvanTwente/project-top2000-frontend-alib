@@ -10,6 +10,7 @@ type ApiSong = {
   titel: string;
   releaseYear: number;
   highestRank: number;
+  imgUrl?: string;
 };
 
 type ApiStats = {
@@ -216,15 +217,26 @@ export default function ArtistDetailsPage() {
                       key={`${song.titel}-${song.releaseYear}-${idx}`}
                       className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
                     >
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {song.titel}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {song.releaseYear}
-                        </p>
+                      <div className="flex items-center gap-4">
+                        {/* Song image */}
+                        <ImageWithFallback
+                          src={song.imgUrl?.trim() || "/fallback-song.jpg"}
+                          alt={song.titel}
+                          className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                        />
+
+                        {/* Song info */}
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {song.titel}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {song.releaseYear}
+                          </p>
+                        </div>
                       </div>
 
+                      {/* Rank */}
                       <div className="text-right">
                         <div className="text-sm font-medium text-red-600">
                           #{song.highestRank}
@@ -234,6 +246,7 @@ export default function ArtistDetailsPage() {
                         </div>
                       </div>
                     </div>
+
                   ))}
                 </div>
               ) : (
@@ -244,7 +257,7 @@ export default function ArtistDetailsPage() {
 
           {/* Sidebar / Stats */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-8">
+            <div className="bg-white rounded-xl shadow-sm p-6 top-8">
               <h3 className="font-bold text-gray-900 mb-4">Snelle Stats</h3>
 
               <dl className="space-y-4">

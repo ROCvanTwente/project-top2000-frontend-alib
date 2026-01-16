@@ -432,7 +432,7 @@ export default function Top2000Table() {
 
                     <td className="px-6 py-4">
                       <Link
-                        href={`/artist/${song.artistId}`}
+                        href={`/artistsDetails/${song.artistId}`}
                         className="text-gray-600 hover:text-red-600 transition"
                       >
                         {song.artistName}
