@@ -104,7 +104,7 @@ export default function Artist() {
     },
   ];
 
-  // ✅ Loading screen (vervangt je huidige "Laden..."-render)
+  // ✅ Loading screen (vervangt je huidige "Laden..."-render)f
  if (loading) {
   return (
     <LoadingState
