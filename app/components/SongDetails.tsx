@@ -19,7 +19,7 @@ type SongDetailDto = {
   songId: number;
   titel: string;
   artistName: string | null;
-  photo: string | null;
+  artistPhoto: string | null;
   artistBiography: string | null;
   lyrics: string | null;
   releaseYear: number | null;
@@ -66,7 +66,7 @@ export default function SongDetails({ songId }: { songId: string }) {
           songId: raw.songId ?? raw.SongId,
           titel: raw.titel ?? raw.Titel,
           artistName: raw.artistName ?? raw.ArtistName ?? null,
-          photo: raw.photo ?? raw.photo ?? null,
+          artistPhoto: raw.Photo ?? raw.Photo ?? null,
           artistBiography: raw.artistBiography ?? raw.ArtistBiography ?? null,
           lyrics: raw.lyrics ?? raw.Lyrics ?? null,
           releaseYear: raw.releaseYear ?? raw.ReleaseYear ?? null,
@@ -326,9 +326,9 @@ export default function SongDetails({ songId }: { songId: string }) {
 
               <div className="mt-3 flex gap-3 items-start">
                 <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  {data.photo ? (
+                  {data.artistPhoto ? (
                     <Image
-                      src={data.photo}
+                      src={data.artistPhoto}
                       alt={veiligeTekst(data.artistName, "Artiest")}
                       fill
                       className="object-cover"
