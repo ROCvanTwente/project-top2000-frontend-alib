@@ -26,7 +26,7 @@ type Top2000Entry = {
   artistId: number;
   artistName: string;
   releaseYear?: number;
-  imageUrl?: string;
+  imgUrl?: string;
 };
 
 /* ------------------------------------------
@@ -410,12 +410,11 @@ export default function Top2000Table() {
 
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        {/* image placeholder (jij kan imageUrl gebruiken) */}
                         <div className="w-12 h-12 rounded bg-gray-200 overflow-hidden">
-                          {song.imageUrl ? (
+                          {song.imgUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                              src={song.imageUrl}
+                              src={song.imgUrl}
                               alt={song.titel}
                               className="w-full h-full object-cover"
                             />
