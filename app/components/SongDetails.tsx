@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   ResponsiveContainer,
@@ -12,14 +13,17 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import Artist from "../artists/page";
 
 type ChartPointDto = { year: number; position: number };
 
 type SongDetailDto = {
   songId: number;
+  artistId: number;
   titel: string;
+  imgUrl: string | null;
   artistName: string | null;
-  artistPhoto: string | null;
+  photo: string | null;
   artistBiography: string | null;
   lyrics: string | null;
   releaseYear: number | null;
@@ -64,9 +68,11 @@ export default function SongDetails({ songId }: { songId: string }) {
         // jouw API kan PascalCase of camelCase teruggeven → normaliseren
         const dto: SongDetailDto = {
           songId: raw.songId ?? raw.SongId,
+          artistId: raw.artistId ?? raw.ArtistId,
           titel: raw.titel ?? raw.Titel,
           artistName: raw.artistName ?? raw.ArtistName ?? null,
-          artistPhoto: raw.Photo ?? raw.Photo ?? null,
+          imgUrl: raw.imgUrl ?? raw.ImgUrl ?? null,
+          photo: raw.artistPhoto ?? raw.artistPhoto ?? null,
           artistBiography: raw.artistBiography ?? raw.ArtistBiography ?? null,
           lyrics: raw.lyrics ?? raw.Lyrics ?? null,
           releaseYear: raw.releaseYear ?? raw.ReleaseYear ?? null,
@@ -139,9 +145,17 @@ export default function SongDetails({ songId }: { songId: string }) {
         <div className="max-w-6xl mx-auto px-6 py-8 flex gap-6 items-center">
           {/* Cover placeholder (details DTO heeft geen imgUrl) */}
           <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-white/10 flex-shrink-0 border border-white/10">
-            <div className="w-full h-full flex items-center justify-center text-white/80 text-sm">
-              Geen cover
-            </div>
+            {data.imgUrl ? (
+              <img
+                src={data.imgUrl}
+                alt={veiligeTekst(data.titel)}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-white/80 text-sm">
+                —
+              </div>
+            )}
           </div>
 
           <div className="flex-1 text-white">
@@ -175,7 +189,24 @@ export default function SongDetails({ songId }: { songId: string }) {
                 >
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
                 </svg>
-                Koppel om af te spelen
+              </button>
+
+              {/* YouTube */}
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
+                onClick={() => console.log("YouTube openen (dummy)")}
+              >
+                {/* YouTube logo (SVG) */}
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
+                </svg>
               </button>
 
               {/* Playlist */}
@@ -195,25 +226,6 @@ export default function SongDetails({ songId }: { songId: string }) {
                   <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
                 </svg>
                 Toevoegen aan playlist
-              </button>
-
-              {/* YouTube */}
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
-                onClick={() => console.log("YouTube openen (dummy)")}
-              >
-                {/* YouTube logo (SVG) */}
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
-                </svg>
-                Bekijk op YouTube
               </button>
             </div>
           </div>
@@ -289,23 +301,6 @@ export default function SongDetails({ songId }: { songId: string }) {
               </div>
             )}
           </div>
-
-          {/* badges onder chart */}
-          {chartData.length ? (
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {chartData.map((p) => (
-                <div
-                  key={p.year}
-                  className="bg-gray-50 border rounded-lg px-3 py-2 text-center"
-                >
-                  <div className="text-xs text-gray-500">{p.year}</div>
-                  <div className="text-sm font-semibold text-red-600">
-                    #{p.position}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : null}
         </div>
 
         {/* Onderste grid */}
@@ -326,9 +321,9 @@ export default function SongDetails({ songId }: { songId: string }) {
 
               <div className="mt-3 flex gap-3 items-start">
                 <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  {data.artistPhoto ? (
+                  {data.photo ? (
                     <Image
-                      src={data.artistPhoto}
+                      src={data.photo}
                       alt={veiligeTekst(data.artistName, "Artiest")}
                       fill
                       className="object-cover"
@@ -354,7 +349,12 @@ export default function SongDetails({ songId }: { songId: string }) {
               </div>
 
               <button className="mt-4 w-full border rounded-md px-3 py-2 text-sm hover:bg-gray-50 transition">
-                Bekijk artiestprofiel
+                <Link
+                          href={`/artistsDetails/${data.artistId}`}
+                          className="hover:text-red-600 transition"
+                        >
+                          <span className="font-medium">Bekijk artiestprofiel</span>
+                        </Link>
               </button>
             </div>
 
