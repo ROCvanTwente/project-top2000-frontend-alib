@@ -1,11 +1,15 @@
 "use client";
 
-import { Search, ArrowUpRight } from "lucide-react";
+import { Search, ArrowUpRight, AlertTriangle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Carousel from "../components/customUI/Carousel";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { Input } from "../components/ui/input";
 import { useEffect, useMemo, useState } from "react";
+import LoadingState from "../components/ui/LoadingState";
+import ErrorState from "./../components/ui/ErrorState";
+
+
 
 type Artist = {
   artistId: string | number;
@@ -100,6 +104,29 @@ export default function Artist() {
     },
   ];
 
+  // ✅ Loading screen (vervangt je huidige "Laden..."-render)
+ if (loading) {
+  return (
+    <LoadingState
+      title="TOP2000 Artiesten"
+      subtitle="Artiesten worden geladen…"
+    />
+  );
+}
+
+
+ if (error) {
+  return (
+    <ErrorState
+      title="Oeps… we kunnen de TOP2000 niet laden"
+      message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
+      error={error}
+      issue="top2000-load-error"
+    />
+  );
+}
+
+
   return (
     <div>
       <Carousel slides={carouselSlides} />
@@ -122,120 +149,105 @@ export default function Artist() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            {loading ? (
-              "Laden..."
-            ) : error ? (
-              `Fout: ${error}`
-            ) : (
-              <>
-                Toon {filteredArtists.length}{" "}
-                {filteredArtists.length === 1 ? "artiest" : "artiesten"}
-                {searchTerm && ` passend op "${searchTerm}"`}
-              </>
-            )}
+            <>
+              Toon {filteredArtists.length}{" "}
+              {filteredArtists.length === 1 ? "artiest" : "artiesten"}
+              {searchTerm && ` passend op "${searchTerm}"`}
+            </>
           </p>
         </div>
 
         {/* Artists Grid */}
-        {!loading && !error && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {paginatedArtists.map((artist) => {
-            const count = artist.stats?.totalSongsInTop2000 ?? 0;
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {paginatedArtists.map((artist) => {
+              const count = artist.stats?.totalSongsInTop2000 ?? 0;
 
-                return (
-                  <div
-                    key={artist.artistId}
-                    className="bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden group relative"
-                  >
-                    <div className="relative aspect-square">
-                      <ImageWithFallback
-                        src={artist.photo}
-                        alt={artist.artistName}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h4 className="mb-2 group-hover:text-red-600 transition">
-                        {artist.artistName}
-                      </h4>
-                      <p className="text-gray-600">
-  {count} {count === 1 ? "nummer" : "nummers"} in TOP2000
-</p>
-                    </div>
-
-                    {/* Alleen het pijltje is klikbaar */}
-                    <Link
-                      href={`/artistsDetails/${artist.artistId}`}
-                      aria-label={`Bekijk details van ${artist.artistName}`}
-                      className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded shadow-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                    >
-                      <ArrowUpRight className="h-4 w-4 text-red-600" />
-                    </Link>
+              return (
+                <div
+                  key={artist.artistId}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden group relative"
+                >
+                  <div className="relative aspect-square">
+                    <ImageWithFallback
+                      src={artist.photo}
+                      alt={artist.artistName}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Pagination UI */}
-            {filteredArtists.length > 0 && totalPages > 1 && (
-              <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <button
-                    onClick={() => goToPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
-                  >
-                    Vorige
-                  </button>
-
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <div>
-                      Pagina <span className="font-medium">{currentPage}</span>{" "}
-                      van <span className="font-medium">{totalPages}</span>
-                    </div>
-
-                    <select
-                      value={currentPage}
-                      onChange={(e) => goToPage(Number(e.target.value))}
-                      className="px-3 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 hover:shadow-md transition"
-                    >
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (p) => (
-                          <option key={p} value={p}>
-                            Pagina {p}
-                          </option>
-                        )
-                      )}
-                    </select>
+                  <div className="p-4">
+                    <h4 className="mb-2 group-hover:text-red-600 transition">
+                      {artist.artistName}
+                    </h4>
+                    <p className="text-gray-600">
+                      {count} {count === 1 ? "nummer" : "nummers"} in TOP2000
+                    </p>
                   </div>
 
-                  <button
-                    onClick={() => goToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
+                  {/* Alleen het pijltje is klikbaar */}
+                  <Link
+                    href={`/artistsDetails/${artist.artistId}`}
+                    aria-label={`Bekijk details van ${artist.artistName}`}
+                    className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded shadow-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
                   >
-                    Volgende
-                  </button>
+                    <ArrowUpRight className="h-4 w-4 text-red-600" />
+                  </Link>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Pagination UI */}
+          {filteredArtists.length > 0 && totalPages > 1 && (
+            <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
+              <div className="flex items-center justify-between gap-4">
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
+                >
+                  Vorige
+                </button>
+
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div>
+                    Pagina <span className="font-medium">{currentPage}</span>{" "}
+                    van <span className="font-medium">{totalPages}</span>
+                  </div>
+
+                  <select
+                    value={currentPage}
+                    onChange={(e) => goToPage(Number(e.target.value))}
+                    className="px-3 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 hover:shadow-md transition"
+                  >
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (p) => (
+                        <option key={p} value={p}>
+                          Pagina {p}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
+                >
+                  Volgende
+                </button>
               </div>
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </>
 
         {/* No results */}
-        {!loading && !error && filteredArtists.length === 0 && (
+        {filteredArtists.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <p className="text-gray-600">
               Geen artiesten gevonden passend op &quot;{searchTerm}&quot;
             </p>
-          </div>
-        )}
-
-        {/* Error box */}
-        {!loading && error && (
-          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-            <p className="text-gray-600">Kon artiesten niet laden.</p>
           </div>
         )}
       </div>
