@@ -22,6 +22,7 @@ interface HeaderProps {
 }
 
 function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) {
+  
   const { isAuthenticated, logout } = useAuth();
 
   return (

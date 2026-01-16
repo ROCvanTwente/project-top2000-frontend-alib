@@ -18,10 +18,10 @@ export default function SongDetails({ params }: { params: Promise<{ id: string }
         const fetchData = async () => {
             try {
                 console.log("Fetching song details for ID:", id);
-                const response = await fetch(`https://localhost:7003/songDetails/?sid=${id}`);
+                const response = await fetch(`https://localhost:7003/songdetails/${id}`);
                 const data = await response.json();
                 console.log("Fetched Song Details:", data);
-                // setSong(data); // Uncomment to use data once structure is confirmed
+                setSong(data);
             } catch (error) {
                 console.error("Error fetching song details:", error);
             }
@@ -48,19 +48,19 @@ export default function SongDetails({ params }: { params: Promise<{ id: string }
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
             <ImageWithFallback
-              src={song.albumImage}
-              alt={song.title}
+              src={song.songImg}
+              alt={song.titel}
               className="w-64 h-64 rounded-lg object-cover shadow-xl"
             />
             <div className="flex-1 text-center md:text-left">
-              <h1 className="mb-2">{song.title}</h1>
-              <Link href={`/artist/${song.artistId}`}>
+              <h1 className="mb-2">{song.titel}</h1>
+              <Link href={`/artistsDetails/${song.artistId}`}>
                 <h3 className="text-white text-opacity-90 hover:text-opacity-100 transition mb-4">
-                  {song.artist}
+                  {song.artistName}
                 </h3>
               </Link>
               <p className="text-white text-opacity-90 mb-6">
-                Released: {song.year}
+                Released: {song.releaseYear}
               </p>
               <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                 {spotifyConnected ? (
