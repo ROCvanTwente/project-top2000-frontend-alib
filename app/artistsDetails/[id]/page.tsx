@@ -231,7 +231,7 @@ export default function ArtistDetailsPage() {
                         <div>
                           <h3 className="font-semibold text-gray-900">
                             <Link
-                              href={`/song/${song.songId}`}
+                              href={`/songDetails/${song.songId}`}
                               className="hover:text-red-600 transition-colors"
                             >
                               {song.titel}
@@ -293,7 +293,7 @@ export default function ArtistDetailsPage() {
                     artist.stats?.oldestSong?.songId != null &&
                       String(artist.stats?.oldestSong?.songId).trim() !== "" ? (
                       <Link
-                        href={`/song/${artist.stats.oldestSong?.songId}`}
+                        href={`/songDetails/${artist.stats.oldestSong?.songId}`}
                         className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
                       >
                         {artist.stats.oldestSong.titel}
@@ -321,7 +321,7 @@ export default function ArtistDetailsPage() {
                     artist.stats?.newestSong?.songId != null &&
                       String(artist.stats?.newestSong?.songId).trim() !== "" ? (
                       <Link
-                        href={`/song/${artist.stats.newestSong?.songId}`}
+                        href={`/songDetails/${artist.stats.newestSong?.songId}`}
                         className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
                       >
                         {artist.stats.newestSong.titel}

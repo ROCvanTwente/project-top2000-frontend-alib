@@ -476,7 +476,7 @@ export default function Top2000Table() {
                           ) : null}
                         </div>
 
-                        <Link href={`/song/${song.songId}`} className="hover:text-red-600 transition">
+                        <Link href={`/songDetails/${song.songId}`} className="hover:text-red-600 transition">
                           <span className="font-medium">{song.titel}</span>
                         </Link>
                       </div>
@@ -536,7 +536,7 @@ export default function Top2000Table() {
                 {/* Title + Artist */}
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/song/${song.songId}`}
+                    href={`/songDetails/${song.songId}`}
                     className="hover:text-red-600 transition-colors block"
                   >
                     <h4 className="font-semibold line-clamp-1">{song.titel}</h4>
