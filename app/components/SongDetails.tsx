@@ -183,11 +183,11 @@ export default function SongDetails({ songId }: { songId: string }) {
               {/* ✅ Rechtsboven: terug-link, daaronder songtekst button */}
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 <Link
-                  href="/year"
+                  href="/songs"
                   className="inline-flex items-center gap-2 text-white/95 hover:text-white underline-offset-4 transition whitespace-nowrap"
                 >
                   <span aria-hidden="true">←</span>
-                  Terug naar TOP2000
+                  Terug naar Nummers
                 </Link>
 
               </div>

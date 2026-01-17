@@ -275,7 +275,7 @@ export default function ArtistDetailsPage() {
 
                 <div className="flex justify-between py-3 border-b border-gray-100">
                   <dt className="text-gray-500">Hoogste Rangschikking</dt>
-                  <dd className="font-medium text-gray-900">
+                  <dd className="font-medium text-red-600">
                     {artist.stats?.highestRankOverall
                       ? `#${artist.stats.highestRankOverall}`
                       : "-"}
