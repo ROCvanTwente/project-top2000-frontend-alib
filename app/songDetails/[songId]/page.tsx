@@ -8,4 +8,4 @@ export default function SongPage() {
   const songId = params.songId as string;
 
   return <SongDetails songId={songId} />;
-}
+}  
