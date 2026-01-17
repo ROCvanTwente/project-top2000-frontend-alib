@@ -4,9 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import LoadingState from "../../components/ui/LoadingState";
 import { ImageWithFallback } from "../../components/ImageWithFallback";
 
 type ApiSong = {
+  songId: number | string;
   titel: string;
   releaseYear: number;
   highestRank: number;
@@ -16,9 +18,10 @@ type ApiSong = {
 type ApiStats = {
   totalSongsInTop2000: number;
   highestRankOverall: number;
-  oldestSong: { titel: string; releaseYear: number };
-  newestSong: { titel: string; releaseYear: number };
+  oldestSong?: { songId?: number | string | null; titel: string; releaseYear: number } | null;
+  newestSong?: { songId?: number | string | null; titel: string; releaseYear: number } | null;
 };
+
 
 type Artist = {
   artistId: number | string;
@@ -64,6 +67,8 @@ export default function ArtistDetailsPage() {
           : (data ?? null);
 
         if (!isMounted) return;
+
+        
         setArtist(parsed);
       } catch (e: any) {
         if (!isMounted) return;
@@ -95,13 +100,10 @@ export default function ArtistDetailsPage() {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <p className="text-gray-600">Laden...</p>
-          </div>
-        </div>
-      </div>
+      <LoadingState
+        title="TOP2000 Artiesten"
+        subtitle="Artiest gegevens worden geladen…"
+      />
     );
   }
 
@@ -228,7 +230,12 @@ export default function ArtistDetailsPage() {
                         {/* Song info */}
                         <div>
                           <h3 className="font-semibold text-gray-900">
-                            {song.titel}
+                            <Link
+                              href={`/song/${song.songId}`}
+                              className="hover:text-red-600 transition-colors"
+                            >
+                              {song.titel}
+                            </Link>
                           </h3>
                           <p className="text-sm text-gray-500">
                             {song.releaseYear}
@@ -274,7 +281,6 @@ export default function ArtistDetailsPage() {
                       : "-"}
                   </dd>
                 </div>
-
                 <div className="py-3 border-b border-gray-100">
                   <div className="flex justify-between">
                     <dt className="text-gray-500">Oudste Nummer</dt>
@@ -282,12 +288,25 @@ export default function ArtistDetailsPage() {
                       {artist.stats?.oldestSong?.releaseYear ?? "-"}
                     </dd>
                   </div>
-                  {artist.stats?.oldestSong?.titel && (
-                    <div className="text-sm text-gray-600 mt-1">
-                      {artist.stats.oldestSong.titel}
-                    </div>
-                  )}
+
+                  {artist.stats?.oldestSong?.titel ? (
+                    artist.stats?.oldestSong?.songId != null &&
+                      String(artist.stats?.oldestSong?.songId).trim() !== "" ? (
+                      <Link
+                        href={`/song/${artist.stats.oldestSong?.songId}`}
+                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
+                      >
+                        {artist.stats.oldestSong.titel}
+                      </Link>
+                    ) : (
+                      <div className="text-sm text-gray-400 mt-1">
+                        {artist.stats.oldestSong.titel}
+                      </div>
+                    )
+                  ) : null}
                 </div>
+
+
 
                 <div className="py-3 border-b border-gray-100">
                   <div className="flex justify-between">
@@ -296,11 +315,23 @@ export default function ArtistDetailsPage() {
                       {artist.stats?.newestSong?.releaseYear ?? "-"}
                     </dd>
                   </div>
-                  {artist.stats?.newestSong?.titel && (
-                    <div className="text-sm text-gray-600 mt-1">
-                      {artist.stats.newestSong.titel}
-                    </div>
-                  )}
+
+                  
+                  {artist.stats?.newestSong?.titel ? (
+                    artist.stats?.newestSong?.songId != null &&
+                      String(artist.stats?.newestSong?.songId).trim() !== "" ? (
+                      <Link
+                        href={`/song/${artist.stats.newestSong?.songId}`}
+                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
+                      >
+                        {artist.stats.newestSong.titel}
+                      </Link>
+                    ) : (
+                      <div className="text-sm text-gray-400 mt-1">
+                        {artist.stats.newestSong.titel}
+                      </div>
+                    )
+                  ) : null}
                 </div>
               </dl>
             </div>

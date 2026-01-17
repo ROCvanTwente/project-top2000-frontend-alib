@@ -165,66 +165,120 @@ export default function SongDetails({ songId }: { songId: string }) {
           </div>
 
           <div className="flex-1 text-white">
-            <h1 className="text-2xl font-semibold">{veiligeTekst(data.titel)}</h1>
-            <p className="text-white/90 mt-1">
-              {veiligeTekst(data.artistName, "Onbekende artiest")}
-            </p>
-            <p className="text-white/80 text-sm mt-1">
-              {data.releaseYear ? `Uitgebracht: ${data.releaseYear}` : "Uitgebracht: —"}
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold">
+                  {veiligeTekst(data.titel)}
+                </h1>
+                <p className="text-white/90 mt-1">
+                  {veiligeTekst(data.artistName, "Onbekende artiest")}
+                </p>
+                <p className="text-white/80 text-sm mt-1">
+                  {data.releaseYear
+                    ? `Uitgebracht: ${data.releaseYear}`
+                    : "Uitgebracht: —"}
+                </p>
+              </div>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
-                onClick={() => console.log("Spotify koppelen (dummy)")}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
+              {/* ✅ Rechtsboven: terug-link, daaronder songtekst button */}
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <Link
+                  href="/year"
+                  className="inline-flex items-center gap-2 text-white/95 hover:text-white underline-offset-4 transition whitespace-nowrap"
                 >
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
-                </svg>
-              </button>
+                  <span aria-hidden="true">←</span>
+                  Terug naar TOP2000
+                </Link>
 
+              </div>
+            </div>
 
-
-              {/* YouTube */}
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
-                onClick={() => console.log("YouTube openen (dummy)")}
-              >
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
+            {/* ✅ Buttons met iconen + wit (zichtbaar) */}
+            <div className="mt-5 flex items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
+                  onClick={() => console.log("Spotify koppelen (dummy)")}
                 >
-                  <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
-                </svg>
-              </button>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
+                  </svg>
+                </button>
 
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
-                onClick={() => console.log("Toevoegen aan playlist (dummy)")}
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
+                {/* YouTube */}
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
+                  onClick={() => console.log("YouTube openen (dummy)")}
                 >
-                  <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
-                </svg>
-                Toevoegen aan playlist
-              </button>
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
+                  onClick={() => console.log("Toevoegen aan playlist (dummy)")}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
+                  </svg>
+                  Toevoegen aan playlist
+                </button>
+              </div>
+
+              <div className="flex-shrink-0">
+                {/* songtekst button */}
+                {lyricsIsUrl ? (
+                  <Link
+                    href={(data.lyrics ?? "").trim()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition whitespace-nowrap"
+                  >
+                    Songtekst
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z" />
+                      <path d="M5 5h7v2H7v10h10v-5h2v7H5V5z" />
+                    </svg>
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition whitespace-nowrap disabled:opacity-50"
+                    onClick={() => setLyricsOpen(true)}
+                    disabled={!((data.lyrics ?? "").trim().length)}
+                  >
+                    Songtekst
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -240,8 +294,8 @@ export default function SongDetails({ songId }: { songId: string }) {
                 {aantalKeerInTop2000 ? (
                   <>
                     Keer in TOP2000:{" "}
-                    <span className="font-semibold">{aantalKeerInTop2000}</span> •
-                    Beste positie:{" "}
+                    <span className="font-semibold">{aantalKeerInTop2000}</span>{" "}
+                    • Beste positie:{" "}
                     <span className="font-semibold text-red-600">
                       #{bestePositie}
                     </span>
@@ -250,41 +304,6 @@ export default function SongDetails({ songId }: { songId: string }) {
                   "Geen hitlijstgegevens"
                 )}
               </div>
-
-              {lyricsIsUrl ? (
-                <Link
-                  href={(data.lyrics ?? "").trim()}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition"
-                >
-                  Songtekst
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3z" />
-                    <path d="M5 5h7v2H7v10h10v-5h2v7H5V5z" />
-                  </svg>
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => setLyricsOpen(true)}
-                  disabled={!((data.lyrics ?? "").trim().length)}
-                  title={
-                    (data.lyrics ?? "").trim().length
-                      ? "Bekijk songtekst"
-                      : "Geen songtekst beschikbaar"
-                  }
-                >
-                  Songtekst
-                </button>
-              )}
             </div>
           </div>
 
@@ -360,7 +379,10 @@ export default function SongDetails({ songId }: { songId: string }) {
                 </div>
 
                 <div className="mt-3 text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {veiligeTekst(data.artistBiography, "Geen biografie beschikbaar.")}
+                  {veiligeTekst(
+                    data.artistBiography,
+                    "Geen biografie beschikbaar."
+                  )}
                 </div>
 
                 <div className="mt-5">
@@ -418,31 +440,6 @@ export default function SongDetails({ songId }: { songId: string }) {
             </div>
           </div>
         </div>
-
-        {lyricsOpen && !lyricsIsUrl && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <button
-              aria-label="Close"
-              className="absolute inset-0 bg-black/40"
-              onClick={() => setLyricsOpen(false)}
-            />
-            <div className="relative z-10 w-[min(900px,92vw)] max-h-[80vh] bg-white rounded-xl shadow-lg border overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b">
-                <div className="font-semibold">Songtekst</div>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded-md border hover:bg-gray-50"
-                  onClick={() => setLyricsOpen(false)}
-                >
-                  Sluiten
-                </button>
-              </div>
-              <div className="p-5 overflow-auto whitespace-pre-wrap text-gray-800 leading-relaxed">
-                {veiligeTekst(data.lyrics, "Geen songtekst beschikbaar.")}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

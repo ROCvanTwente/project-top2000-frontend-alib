@@ -12,8 +12,6 @@ import {
   Minus,
   Sparkles,
   Play,
-  AlertTriangle,
-  RefreshCw,
 } from "lucide-react";
 
 type Top2000Entry = {
@@ -27,6 +25,17 @@ type Top2000Entry = {
   artistName: string;
   releaseYear?: number;
   imgUrl?: string;
+};
+
+const MAX_FILTER_LEN = 60;
+
+const cleanAndLimit = (value: string) =>
+  value.replace(/\s+/g, " ").trim().slice(0, MAX_FILTER_LEN);
+
+const shortenForUI = (value: string, max = 30) => {
+  const t = value.trim();
+  if (!t) return "";
+  return t.length > max ? `${t.slice(0, max)}…` : t;
 };
 
 /* ------------------------------------------
@@ -102,8 +111,9 @@ export default function Top2000Table() {
   >("Rank");
   const [displayLimit, setDisplayLimit] = useState<number>(100);
 
-  // “Meer laden” (zoals je YearOverview)
-  const [displayCount, setDisplayCount] = useState<number>(100);
+  // ✅ Pagination (vervangt “meer laden”)
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 100;
 
   // Spotify (dummy - jij koppelt dit aan je echte flow)
   const [spotifyConnected] = useState(false);
@@ -121,7 +131,7 @@ export default function Top2000Table() {
     setFilterText("");
     setSortOption("Rank");
     setDisplayLimit(100);
-    setDisplayCount(100);
+    setCurrentPage(1);
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/top2000/${yr}`);
@@ -152,16 +162,62 @@ export default function Top2000Table() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredData = useMemo(() => {
-    const q = filterText.trim().toLowerCase();
-    if (!q) return data;
 
-    return data.filter(
-      (song) =>
-        song.artistName.toLowerCase().includes(q) ||
-        song.titel.toLowerCase().includes(q)
-    );
+  const filteredData = useMemo(() => {
+    const qRaw = filterText.trim().toLowerCase();
+    if (!qRaw) return data;
+
+    // haal nummers uit tekst als: "#42", "rang 42", "jaar 1999"
+    const numberMatch = qRaw.match(/\d+/);
+    const qNum = numberMatch ? Number(numberMatch[0]) : null;
+    const isNumeric = qNum !== null && !Number.isNaN(qNum);
+
+    return data.filter((song) => {
+      const artistMatch = song.artistName.toLowerCase().includes(qRaw);
+      const titleMatch = song.titel.toLowerCase().includes(qRaw);
+
+      // Jaar (releaseYear heeft voorrang, anders year)
+      const yearValue = song.releaseYear ?? song.year;
+      const yearMatch =
+        isNumeric &&
+          (qRaw.includes("jaar") ||
+            qRaw.includes("uit") ||
+            qRaw.includes("release") ||
+            String(yearValue).includes(qRaw))
+          ? yearValue === qNum || String(yearValue).includes(String(qNum))
+          : false;
+
+      // Rang / positie
+      const rankMatch =
+        isNumeric &&
+          (qRaw.includes("rang") ||
+            qRaw.includes("positie") ||
+            qRaw.startsWith("#") ||
+            /^\d+$/.test(qRaw))
+          ? song.position === qNum || String(song.position).includes(String(qNum))
+          : false;
+
+      // fallback: puur numeriek zonder woorden → match zowel jaar als rang
+      const genericNumberMatch =
+        isNumeric &&
+        !qRaw.match(/[a-z]/) &&
+        (song.position === qNum || yearValue === qNum);
+
+      return (
+        artistMatch ||
+        titleMatch ||
+        yearMatch ||
+        rankMatch ||
+        genericNumberMatch
+      );
+    });
   }, [data, filterText]);
+
+  const filterTextDisplay = useMemo(() => {
+    const t = filterText.trim();
+    if (!t) return "";
+    return t.length > 30 ? `${t.slice(0, 30)}…` : t;
+  }, [filterText]);
 
   const sortedData = useMemo(() => {
     const arr = [...filteredData];
@@ -181,45 +237,57 @@ export default function Top2000Table() {
     return arr;
   }, [filteredData, sortOption]);
 
-  // respecteer displayLimit (100/200/500/etc) + “meer laden” tot max displayLimit
+  // respecteer displayLimit (100/200/500/etc)
   const limitedData = useMemo(() => {
     return sortedData.slice(0, displayLimit);
   }, [sortedData, displayLimit]);
 
-  const displayedSongs = useMemo(() => {
-    return limitedData.slice(0, displayCount);
-  }, [limitedData, displayCount]);
+  // ✅ reset page bij filter/sort/limit
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterText, sortOption, displayLimit, selectedYear]);
 
-  const hasMore = displayCount < limitedData.length;
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(limitedData.length / ITEMS_PER_PAGE));
+  }, [limitedData.length]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+
+  const displayedSongs = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return limitedData.slice(start, start + ITEMS_PER_PAGE);
+  }, [limitedData, currentPage]);
+
+  const goToPage = (page: number) => {
+    const safe = Math.min(Math.max(1, page), totalPages);
+    setCurrentPage(safe);
+  };
 
   const handleResetFilters = () => {
     setFilterText("");
     setSortOption("Rank");
     setDisplayLimit(100);
-    setDisplayCount(100);
+    setCurrentPage(1);
   };
 
   if (loading) {
-  return (
-    <LoadingState
-      title={`TOP2000 ${selectedYear}`}
-      subtitle="Nummers worden geladen…"
-    />
-  );
-}
+    return (
+      <LoadingState title={`TOP2000 ${selectedYear}`} subtitle="Nummers worden geladen…" />
+    );
+  }
 
-
- if (error) {
-  return (
-    <ErrorState
-      title="Oeps… we kunnen de TOP2000 niet laden"
-      message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
-      error={error}
-      issue="top2000-load-error"
-    />
-  );
-}
-
+  if (error) {
+    return (
+      <ErrorState
+        title="Oeps… we kunnen de TOP2000 niet laden"
+        message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
+        error={error}
+        issue="top2000-load-error"
+      />
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -305,31 +373,23 @@ export default function Top2000Table() {
 
             {/* Filter */}
             <div>
-              <label className="block mb-2 text-sm text-gray-700">
-                Filteren
-              </label>
+              <label className="block mb-2 text-sm text-gray-700">Filteren</label>
               <input
-                placeholder="Zoek artiest of titel..."
+                placeholder="Zoek artiest, titel, jaar, rang"
                 value={filterText}
-                onChange={(e) => {
-                  setFilterText(e.target.value);
-                  setDisplayCount(100);
-                }}
+                maxLength={MAX_FILTER_LEN}
+                onChange={(e) => setFilterText(cleanAndLimit(e.target.value))}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />
+
             </div>
 
             {/* Sort */}
             <div>
-              <label className="block mb-2 text-sm text-gray-700">
-                Sorteer op
-              </label>
+              <label className="block mb-2 text-sm text-gray-700">Sorteer op</label>
               <select
                 value={sortOption}
-                onChange={(e) => {
-                  setSortOption(e.target.value as any);
-                  setDisplayCount(100);
-                }}
+                onChange={(e) => setSortOption(e.target.value as any)}
                 className="w-full p-2 border border-gray-300 rounded-lg bg-white"
               >
                 <option value="Rank">Rangschikking</option>
@@ -341,15 +401,12 @@ export default function Top2000Table() {
 
             {/* Display limit */}
             <div>
-              <label className="block mb-2 text-sm text-gray-700">
-                Weergavelimiet
-              </label>
+              <label className="block mb-2 text-sm text-gray-700">Weergavelimiet</label>
               <select
                 value={displayLimit}
                 onChange={(e) => {
                   const v = Number(e.target.value);
                   setDisplayLimit(v);
-                  setDisplayCount((prev) => Math.min(prev, v));
                 }}
                 className="w-full p-2 border border-gray-300 rounded-lg bg-white"
               >
@@ -377,8 +434,9 @@ export default function Top2000Table() {
         <div className="mb-6">
           <p className="text-gray-600">
             Toon {displayedSongs.length} van {limitedData.length} nummers
-            {filterText && ` passend op "${filterText}"`}
+            {filterTextDisplay && ` passend op "${filterTextDisplay}"`}
           </p>
+
         </div>
 
         {/* Desktop Table */}
@@ -402,10 +460,7 @@ export default function Top2000Table() {
                     className="hover:bg-gray-50 transition"
                   >
                     <td className="px-6 py-4">
-                      <RankBadge
-                        position={song.position}
-                        difference={song.difference}
-                      />
+                      <RankBadge position={song.position} difference={song.difference} />
                     </td>
 
                     <td className="px-6 py-4">
@@ -421,10 +476,7 @@ export default function Top2000Table() {
                           ) : null}
                         </div>
 
-                        <Link
-                          href={`/song/${song.songId}`}
-                          className="hover:text-red-600 transition"
-                        >
+                        <Link href={`/song/${song.songId}`} className="hover:text-red-600 transition">
                           <span className="font-medium">{song.titel}</span>
                         </Link>
                       </div>
@@ -439,9 +491,7 @@ export default function Top2000Table() {
                       </Link>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-600">
-                      {song.releaseYear ?? song.year}
-                    </td>
+                    <td className="px-6 py-4 text-gray-600">{song.releaseYear ?? song.year}</td>
 
                     <td className="px-6 py-4">
                       {spotifyConnected ? (
@@ -506,10 +556,7 @@ export default function Top2000Table() {
                       onClick={() => handlePlay(song.songId)}
                       className="w-10 h-10 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center shadow-md shadow-green-600/40 active:scale-95 transition-transform duration-200"
                     >
-                      <Play
-                        className="h-5 w-5 text-white ml-0.5"
-                        fill="white"
-                      />
+                      <Play className="h-5 w-5 text-white ml-0.5" fill="white" />
                     </button>
                   ) : (
                     <button
@@ -525,33 +572,53 @@ export default function Top2000Table() {
           </div>
         </div>
 
-        {/* Load more */}
-        {hasMore && (
-          <div className="mt-8 text-center">
-            <button
-              onClick={() =>
-                setDisplayCount((prev) =>
-                  Math.min(prev + 100, limitedData.length)
-                )
-              }
-              className="px-4 py-2 border rounded-lg border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
-            >
-              Meer Laden ({Math.min(100, limitedData.length - displayCount)} nog
-              meer nummers)
-            </button>
+        {/* ✅ Pagination UI (vervangt “Load more”) */}
+        {limitedData.length > 0 && totalPages > 1 && (
+          <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
+            <div className="flex items-center justify-between gap-4">
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
+              >
+                Vorige
+              </button>
+
+              <div className="flex items-center gap-3 text-gray-600">
+                <div>
+                  Pagina <span className="font-medium">{currentPage}</span> van{" "}
+                  <span className="font-medium">{totalPages}</span>
+                </div>
+
+                <select
+                  value={currentPage}
+                  onChange={(e) => goToPage(Number(e.target.value))}
+                  className="px-3 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 hover:shadow-md transition"
+                >
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <option key={p} value={p}>
+                      Pagina {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition"
+              >
+                Volgende
+              </button>
+            </div>
           </div>
         )}
 
         {/* Empty */}
         {limitedData.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600">
-              Geen nummers gevonden die aan je filters voldoen.
-            </p>
-            <button
-              onClick={() => setFilterText("")}
-              className="mt-4 px-4 py-2 border rounded-lg"
-            >
+            <p className="text-gray-600">Geen nummers gevonden die aan je filters voldoen.</p>
+            <button onClick={() => setFilterText("")} className="mt-4 px-4 py-2 border rounded-lg">
               Wis Filters
             </button>
           </div>

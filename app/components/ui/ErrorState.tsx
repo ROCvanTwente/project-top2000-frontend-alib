@@ -55,7 +55,7 @@ export default function ErrorState({
         {!!error && (
           <div className="text-left bg-neutral-50 rounded-lg p-3 border border-neutral-200 mb-5">
             <p className="text-xs uppercase tracking-wide text-neutral-500 mb-1">
-              Foutmelding
+              Foutmelding:
             </p>
             <p className="text-sm text-neutral-700 break-words">{error}</p>
           </div>
@@ -63,11 +63,12 @@ export default function ErrorState({
 
         <button
           onClick={() => window.location.reload()}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 hover:shadow-md transition"
+          className="group cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow-sm bg-white border border-gray-200 text-gray-700 hover:shadow-md transition"
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4 transition-transform group-hover:animate-spin" />
           Pagina vernieuwen
         </button>
+
       </div>
     </div>
   );
