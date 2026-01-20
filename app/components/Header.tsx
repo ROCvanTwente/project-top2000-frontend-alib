@@ -180,7 +180,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                 Artiesten
               </Link>
               <Link href="/songs" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Nunners
+                Nummers
               </Link>
               <Link href="/statistics" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Statistieken

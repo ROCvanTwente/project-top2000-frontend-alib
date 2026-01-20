@@ -164,8 +164,8 @@ export default function Songs() {
   if (error) {
     return (
       <ErrorState
-        title="Oeps… we kunnen de songs niet laden"
-        message="Er ging iets mis bij het ophalen van de songs."
+        title="Oeps… we kunnen de nummers niet laden"
+        message="Er ging iets mis bij het ophalen van de nummers."
         error={error}
         issue="songs-load-error"
       />
