@@ -21,6 +21,18 @@ type Artist = {
   };
 };
 
+const MAX_FILTER_LEN = 60;
+
+const cleanAndLimit = (value: string) =>
+  value.replace(/\s+/g, " ").trim().slice(0, MAX_FILTER_LEN);
+
+const shortenForUI = (value: string, max = 30) => {
+  const t = value.trim();
+  if (!t) return "";
+  return t.length > max ? `${t.slice(0, max)}…` : t;
+};
+
+
 export default function Artist() {
   const [searchTerm, setSearchTerm] = useState("");
   const [allArtists, setAllArtists] = useState<Artist[]>([]);
@@ -95,6 +107,12 @@ export default function Artist() {
     setCurrentPage(safe);
   };
 
+  const searchTermDisplay = useMemo(
+    () => shortenForUI(searchTerm, 30),
+    [searchTerm]
+  );
+
+
   const carouselSlides = [
     {
       image:
@@ -105,29 +123,30 @@ export default function Artist() {
   ];
 
   // ✅ Loading screen (vervangt je huidige "Laden..."-render)f
- if (loading) {
+  if (loading) {
+    return (
+      <LoadingState
+        title="TOP2000 Artiesten"
+        subtitle="Artiesten worden geladen…"
+      />
+    );
+  }
+
+
+  if (error) {
+    return (
+      <ErrorState
+        title="Oeps… we kunnen de TOP2000 niet laden"
+        message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
+        error={error}
+        issue="top2000-load-error"
+      />
+    );
+  }
+
+
   return (
-    <LoadingState
-      title="TOP2000 Artiesten"
-      subtitle="Artiesten worden geladen…"
-    />
-  );
-}
 
-
- if (error) {
-  return (
-    <ErrorState
-      title="Oeps… we kunnen de TOP2000 niet laden"
-      message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
-      error={error}
-      issue="top2000-load-error"
-    />
-  );
-}
-
-
-  return (
     <div>
       <Carousel slides={carouselSlides} />
 
@@ -141,9 +160,10 @@ export default function Artist() {
           <Input
             placeholder="Zoeken op artiestennaam..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(cleanAndLimit(e.target.value))}
             className="max-w-md"
           />
+
         </div>
 
         {/* Results Count */}
@@ -152,7 +172,7 @@ export default function Artist() {
             <>
               Toon {filteredArtists.length}{" "}
               {filteredArtists.length === 1 ? "artiest" : "artiesten"}
-              {searchTerm && ` passend op "${searchTerm}"`}
+              {searchTerm && ` passend op "${searchTermDisplay}"`}
             </>
           </p>
         </div>

@@ -177,16 +177,16 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                 Top2000
               </Link>
               <Link href="/artists" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Artists
+                Artiesten
               </Link>
               <Link href="/songs" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Songs
+                Nunners
               </Link>
               <Link href="/statistics" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Statistics
+                Statistieken
               </Link>
               <Link href="/history" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                History
+                Geschiedenis
               </Link>
               <Link href="/faq" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 FAQ
