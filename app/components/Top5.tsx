@@ -32,7 +32,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
 
   const fetchData = (year: number) => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/top5/${year}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/top5/${year}`)
       .then(async (res) => {
         
         const json = await res.json();
