@@ -136,8 +136,8 @@ export default function Artist() {
   if (error) {
     return (
       <ErrorState
-        title="Oeps… we kunnen de TOP2000 niet laden"
-        message="Er ging iets mis bij het ophalen van de TOP2000-gegevens. Probeer het later opnieuw."
+        title="Oeps… we kunnen de artiesten niet laden"
+        message="Er ging iets mis bij het ophalen van de artiesten. Probeer het later opnieuw."
         error={error}
         issue="top2000-load-error"
       />

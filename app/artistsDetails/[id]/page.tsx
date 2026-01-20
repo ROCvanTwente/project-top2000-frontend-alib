@@ -177,7 +177,7 @@ export default function ArtistDetailsPage() {
           </h1>
 
           <div className="flex items-center space-x-6 text-white/90">
-            <span className="text-lg">{totalSongs} nummers in TOP2000</span>
+            <span className="text-lg">{totalSongs} {totalSongs > 1 ? "nummers" : "nummer"} in TOP2000</span>
 
             {!!artist.wikipediaUrl?.trim() && (
               <a
