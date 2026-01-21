@@ -4,10 +4,18 @@ import React, { useState, useRef, useEffect } from "react";
 import Header from "./components/Header";
 import LoadingBar from "react-top-loading-bar";
 import Footer from "./components/Footer";
+import SpotifyPanel from './components/customUI/SpotifySidebar';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [spotifyPanelOpen, setSpotifyPanelOpen] = useState(false);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+  const [currentSong, setCurrentSong] = useState({
+    title: '',
+    artist: '',
+    albumImage: ''
+  });
+  const [isPlaying, setIsPlaying] = useState(false);
   const loadingRef = useRef<any>(null);
   const pendingRef = useRef<number>(0);
   const originalFetchRef = useRef<typeof fetch | null>(null);
@@ -40,6 +48,16 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     };
   }, []);
 
+  const handleSpotifyConnect = () => {
+    setSpotifyConnected(true);
+    setCurrentSong({
+      title: 'Bohemian Rhapsody',
+      artist: 'Queen',
+      albumImage: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=400'
+    });
+    setIsPlaying(true);
+  };
+
   return (
     <>
       <LoadingBar color="var(--primary)" ref={loadingRef} />
@@ -55,6 +73,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <footer className="w-full">
         <Footer />
       </footer>
+      <SpotifyPanel 
+          isOpen={spotifyPanelOpen}
+          onClose={() => setSpotifyPanelOpen(false)}
+          isConnected={spotifyConnected}  
+          onConnect={handleSpotifyConnect}
+        />
     </>
   );
 }
