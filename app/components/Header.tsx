@@ -22,7 +22,7 @@ interface HeaderProps {
 }
 
 function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
     <div className="flex items-center space-x-2">
@@ -72,7 +72,7 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
 
 export default function Header({ selectedYear, onYearChange, onSpotifyClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const years = getYearsList();
   const djList = getDJList();
 
@@ -128,6 +128,11 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             <Link href="/contact" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Contact
             </Link>
+            {isAdmin && (
+              <Link href="/admin" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+                Beheerder
+              </Link>
+            )}
           </nav>
 
           {/* Year Selector & Spotify/User */}
@@ -194,6 +199,11 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               <Link href="/contact" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Contact
               </Link>
+              {isAdmin && (
+                <Link href="/admin" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
+                  Beheerder
+                </Link>
+              )}
             </nav>
 
             <div className="mt-3 border-t border-red-100 pt-3">

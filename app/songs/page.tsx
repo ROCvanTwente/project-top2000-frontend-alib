@@ -38,7 +38,6 @@ export default function Songs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Pagination (zelfde stijl als Top2000Table)
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
@@ -96,7 +95,6 @@ export default function Songs() {
     const qRaw = searchTerm.trim().toLowerCase();
     if (!qRaw) return songs;
 
-    // ✅ als iemand "1999" typt, moet hij ook op release year matchen
     const numberMatch = qRaw.match(/\d+/);
     const qNum = numberMatch ? Number(numberMatch[0]) : null;
     const isNumeric = qNum !== null && !Number.isNaN(qNum);
@@ -105,9 +103,6 @@ export default function Songs() {
       const titleMatch = song.title.toLowerCase().includes(qRaw);
       const artistMatch = song.artist.toLowerCase().includes(qRaw);
 
-      // ✅ Uitgebracht / release year match:
-      // - "1999" of "99" etc.
-      // - "uitgebracht 1999" / "release 1999" / "jaar 1999"
       const yearStr = String(song.year);
       const yearTextMatch =
         qRaw.includes("uitgebracht") ||
@@ -126,7 +121,6 @@ export default function Songs() {
     });
   }, [songs, searchTerm]);
 
-  // ✅ reset page bij zoeken
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -229,7 +223,6 @@ export default function Songs() {
           ))}
         </div>
 
-        {/* ✅ Pagination UI (zelfde als Top2000Table) */}
         {filteredSongs.length > 0 && totalPages > 1 && (
           <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between gap-4">

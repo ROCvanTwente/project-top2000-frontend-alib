@@ -39,7 +39,6 @@ export default function SongDetails({ songId }: { songId: string }) {
   const [laden, setLaden] = useState(true);
   const [fout, setFout] = useState<string | null>(null);
 
-  // ✅ Songtekst button (rechtsboven) -> open URL of modal
   const [lyricsOpen, setLyricsOpen] = useState(false);
 
   const lyricsIsUrl = useMemo(() => {
@@ -180,7 +179,6 @@ export default function SongDetails({ songId }: { songId: string }) {
                 </p>
               </div>
 
-              {/* ✅ Rechtsboven: terug-link, daaronder songtekst button */}
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 <Link
                   href="/songs"
@@ -193,7 +191,6 @@ export default function SongDetails({ songId }: { songId: string }) {
               </div>
             </div>
 
-            {/* ✅ Buttons met iconen + wit (zichtbaar) */}
             <div className="mt-5 flex items-center justify-between gap-4">
               <div className="flex flex-wrap gap-3">
                 <button

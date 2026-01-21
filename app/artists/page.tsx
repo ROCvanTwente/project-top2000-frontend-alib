@@ -38,7 +38,6 @@ export default function Artist() {
   const [allArtists, setAllArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
@@ -50,15 +49,16 @@ export default function Artist() {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artists`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/artists`,
+          { cache: "no-store" }
+        );
 
         if (!res.ok) {
           throw new Error(`API error: ${res.status} ${res.statusText}`);
         }
 
-        const data = await res.json();
+        const data: Artist[] = await res.json();
 
         if (!isMounted) return;
         setAllArtists(Array.isArray(data) ? data : []);
@@ -80,32 +80,34 @@ export default function Artist() {
   }, []);
 
   const filteredArtists = useMemo(() => {
+    if (!searchTerm) return allArtists;
     return allArtists.filter((artist) =>
       artist.artistName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [allArtists, searchTerm]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
-  const totalPages = useMemo(() => {
-    return Math.max(1, Math.ceil(filteredArtists.length / ITEMS_PER_PAGE));
-  }, [filteredArtists.length]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
-  }, [currentPage, totalPages]);
-
+  // Client-side pagination
   const paginatedArtists = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredArtists.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredArtists, currentPage]);
 
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredArtists.length / ITEMS_PER_PAGE));
+  }, [filteredArtists.length]);
+
   const goToPage = (page: number) => {
     const safe = Math.min(Math.max(1, page), totalPages);
     setCurrentPage(safe);
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
 
   const searchTermDisplay = useMemo(
     () => shortenForUI(searchTerm, 30),
@@ -122,7 +124,6 @@ export default function Artist() {
     },
   ];
 
-  // ✅ Loading screen (vervangt je huidige "Laden..."-render)f
   if (loading) {
     return (
       <LoadingState
@@ -169,11 +170,17 @@ export default function Artist() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            <>
-              Toon {filteredArtists.length}{" "}
-              {filteredArtists.length === 1 ? "artiest" : "artiesten"}
-              {searchTerm && ` passend op "${searchTermDisplay}"`}
-            </>
+            {searchTerm ? (
+              <>
+                Toon {paginatedArtists.length} van {filteredArtists.length}{" "}
+                {filteredArtists.length === 1 ? "artiest" : "artiesten"}
+                {searchTerm && ` passend op "${searchTermDisplay}"`}
+              </>
+            ) : (
+              <>
+                Pagina {currentPage} van {totalPages} - Totaal {allArtists.length} artiesten
+              </>
+            )}
           </p>
         </div>
 
@@ -218,7 +225,7 @@ export default function Artist() {
           </div>
 
           {/* Pagination UI */}
-          {filteredArtists.length > 0 && totalPages > 1 && (
+          {filteredArtists.length > ITEMS_PER_PAGE && (
             <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
               <div className="flex items-center justify-between gap-4">
                 <button

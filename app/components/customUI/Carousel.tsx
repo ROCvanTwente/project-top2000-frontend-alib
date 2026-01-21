@@ -14,9 +14,10 @@ interface CarouselSlide {
 
 interface CarouselProps {
   slides: CarouselSlide[];
+  showBottomBar?: boolean;
 }
 
-export default function Carousel({ slides }: CarouselProps) {
+export default function Carousel({ slides, showBottomBar = true }: CarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -81,23 +82,24 @@ export default function Carousel({ slides }: CarouselProps) {
                 </p>
               )}
               
-              {/* Stats Bar */}
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-white/90">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                  <span className="text-sm font-semibold">2000 Nummers</span>
+              {showBottomBar && (
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-white/90">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                    <span className="text-sm font-semibold">2000 Nummers</span>
+                  </div>
+                  <div className="w-px h-4 bg-white/30" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                    <span className="text-sm font-semibold">1000+ Artiesten</span>
+                  </div>
+                  <div className="w-px h-4 bg-white/30" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                    <span className="text-sm font-semibold">25+ Jaar</span>
+                  </div>
                 </div>
-                <div className="w-px h-4 bg-white/30" />
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-                  <span className="text-sm font-semibold">1000+ Artiesten</span>
-                </div>
-                <div className="w-px h-4 bg-white/30" />
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-                  <span className="text-sm font-semibold">25+ Jaar</span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

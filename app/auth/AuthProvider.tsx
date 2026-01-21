@@ -16,6 +16,7 @@ type ApiError = {
 type AuthContextType = {
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   initialized: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (email: string, password: string, confirmPassword?: string) => Promise<void>;
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [initialized, setInitialized] = useState(false);
   const refreshTimer = useRef<number | null>(null);
   const router = useRouter();
@@ -33,7 +35,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("jwtToken");
-    if (token) setToken(token);
+    if (token) {
+      setToken(token);
+      setIsAdmin(extractIsAdmin(token));
+    }
     const expiresAt = localStorage.getItem("expiresAt");
     if (expiresAt) scheduleRefresh(expiresAt);
     setInitialized(true);
@@ -107,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (newRefresh) localStorage.setItem("refreshToken", newRefresh);
       if (expiresAt) localStorage.setItem("expiresAt", String(expiresAt));
       setToken(newToken);
+      setIsAdmin(extractIsAdmin(newToken));
 
       // schedule next refresh
       scheduleRefresh(expiresAt ?? null);
@@ -172,6 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (refresh) localStorage.setItem("refreshToken", refresh);
     if (expiresAt) localStorage.setItem("expiresAt", String(expiresAt));
     setToken(token);
+    setIsAdmin(extractIsAdmin(token));
 
     // schedule proactive refresh
     scheduleRefresh(expiresAt ?? null);
@@ -200,6 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (refresh) localStorage.setItem("refreshToken", refresh);
       if (expiresAt) localStorage.setItem("expiresAt", String(expiresAt));
       setToken(token);
+      setIsAdmin(extractIsAdmin(token));
       // schedule proactive refresh
       scheduleRefresh(expiresAt ?? null);
 
@@ -215,6 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("expiresAt");
     setToken(null);
+    setIsAdmin(false);
     // clear any pending refresh timer
     if (refreshTimer.current) {
       window.clearTimeout(refreshTimer.current);
@@ -225,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ token, isAuthenticated: !!token, initialized, login, register, logout }}
+      value={{ token, isAuthenticated: !!token, isAdmin, initialized, login, register, logout }}
     >
       {children}
     </AuthContext.Provider>
@@ -240,3 +249,31 @@ export const useAuth = () => {
 };
 
 export default AuthProvider;
+
+function extractIsAdmin(jwt?: string | null): boolean {
+  if (!jwt) return false;
+  try {
+    const parts = jwt.split(".");
+    if (parts.length < 2) return false;
+    const payloadJson = JSON.parse(Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
+    const candidates: Array<string | string[] | boolean | undefined> = [
+      payloadJson?.role,
+      payloadJson?.roles,
+      payloadJson?.isAdmin,
+      payloadJson?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+    ];
+    for (const c of candidates) {
+      if (typeof c === 'string' && c.toLowerCase().includes('admin')) return true;
+      if (Array.isArray(c) && c.some(r => String(r).toLowerCase().includes('admin'))) return true;
+      if (typeof c === 'boolean') return c;
+    }
+    // fallback: allow localStorage override for development/testing
+    if (typeof window !== 'undefined') {
+      const ls = localStorage.getItem('isAdmin');
+      if (ls === 'true') return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}

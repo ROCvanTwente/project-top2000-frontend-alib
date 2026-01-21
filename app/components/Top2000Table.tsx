@@ -38,9 +38,6 @@ const shortenForUI = (value: string, max = 30) => {
   return t.length > max ? `${t.slice(0, max)}…` : t;
 };
 
-/* ------------------------------------------
-   ✅ Rank badge in de stijl van je YearOverview
-------------------------------------------- */
 function RankBadge({
   position,
   difference,
@@ -111,7 +108,6 @@ export default function Top2000Table() {
   >("Rank");
   const [displayLimit, setDisplayLimit] = useState<number>(100);
 
-  // ✅ Pagination (vervangt “meer laden”)
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
@@ -242,7 +238,6 @@ export default function Top2000Table() {
     return sortedData.slice(0, displayLimit);
   }, [sortedData, displayLimit]);
 
-  // ✅ reset page bij filter/sort/limit
   useEffect(() => {
     setCurrentPage(1);
   }, [filterText, sortOption, displayLimit, selectedYear]);
@@ -291,7 +286,6 @@ export default function Top2000Table() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* ✅ HERO (dynamisch jaar) */}
       <div className="relative w-full h-[320px] md:h-[420px] lg:h-[480px] overflow-hidden bg-gradient-to-br from-neutral-900 to-red-900">
         <div className="absolute inset-0 transition-opacity duration-1000 opacity-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -572,7 +566,6 @@ export default function Top2000Table() {
           </div>
         </div>
 
-        {/* ✅ Pagination UI (vervangt “Load more”) */}
         {limitedData.length > 0 && totalPages > 1 && (
           <div className="mt-8 bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between gap-4">
