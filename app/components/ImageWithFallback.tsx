@@ -13,8 +13,7 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
 
   const { src, alt, style, className, ...rest } = props
 
-  // Handle empty or null src
-  const imageSrc = src && src.trim() !== '' ? src : null;
+  const imageSrc = typeof src === 'string' && src.trim() !== '' ? src : null;
 
   return didError || !imageSrc ? (
     <div
