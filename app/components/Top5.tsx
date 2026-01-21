@@ -22,7 +22,7 @@ interface Top2000Entry {
   artistId: number;
   artistName: string;
   releaseYear: number;
-  songImg: string;
+  imgUrl: string;
 }
 
 export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }: Top5Props) {
@@ -100,7 +100,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
                     title={song.titel}
                     artist={song.artistName}
                     artistId={song.artistId.toString()}
-                    albumImage={song.songImg || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400'}
+                    albumImage={song.imgUrl}
                     onPlay={() => handlePlay(song.songId.toString())}
                     canPlay={spotifyConnected}
                   />
