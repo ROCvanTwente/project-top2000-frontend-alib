@@ -18,7 +18,7 @@ export default function QuickInfo() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Link
-              href={`/year/2024`}
+              href={`/year`}
               className="relative bg-white p-7 rounded-lg hover:shadow-xl transition-all duration-300 group overflow-hidden border border-neutral-200 hover:border-red-300 hover:-translate-y-2 min-h-[200px]"
             >
               <div 

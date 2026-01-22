@@ -21,19 +21,16 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err: any) {
-      if (err && err.errors) {
+      // First, always extract and set field errors if they exist
+      if (err?.errors && typeof err.errors === "object") {
         setFieldErrors(err.errors);
-        // Only set a top-level error if there are general (un-keyed) errors.
-        const general = err.errors._global ?? err.errors[""] ?? null;
-        if (Array.isArray(general) && general.length) {
-          setError(String(general[0]));
-        } else if (err && err.message) {
-          // fallback to message only when no field-specific errors
-          setError(err.message);
+        const globalErrors = err.errors._global || err.errors[""];
+        if (globalErrors && Array.isArray(globalErrors) && globalErrors.length > 0) {
+          setError(globalErrors.join(" "));
         } else {
-          setError(null);
+          setError(err.message || "Login failed");
         }
-      } else if (err && err.message) {
+      } else if (err?.message) {
         setError(err.message);
       } else {
         setError("Login failed");
@@ -48,12 +45,17 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-card rounded-lg shadow p-8">
         <h2 className="text-2xl font-semibold mb-4">Inloggen</h2>
 
-        {generalErrors && generalErrors.length > 0 ? (
-          <div className="mb-4">
-            <div className="text-sm text-destructive">{generalErrors[0]}</div>
+        {generalErrors && generalErrors.length > 0 && (
+          <div className="mb-4 space-y-1">
+            {generalErrors.map((err, idx) => (
+              <div key={idx} className="text-sm text-destructive">
+                {err}
+              </div>
+            ))}
           </div>
-        ) : (
-          error && <div className="mb-4 text-sm text-destructive">{error}</div>
+        )}
+        {!generalErrors.length && error && (
+          <div className="mb-4 text-sm text-destructive">{error}</div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
