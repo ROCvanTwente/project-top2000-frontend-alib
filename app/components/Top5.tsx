@@ -116,7 +116,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
                     <span className="font-bold text-xs">#{song.position}</span>
                   </div>
                   <ImageWithFallback
-                    src={'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400'}
+                    src={song.imgUrl}
                     alt={song.titel}
                     className="w-12 h-12 rounded object-cover shrink-0"
                   />
