@@ -173,8 +173,8 @@ export default function AdminSongs() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Link */}
-        <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+        <Link href="/admin" className="inline-flex items-center text-red-600 hover:text-red-600 mb-6">
+          <ArrowLeft className="h-4 w-4 mr-2 text-red-600" />
           Terug naar Beheerder
         </Link>
 
