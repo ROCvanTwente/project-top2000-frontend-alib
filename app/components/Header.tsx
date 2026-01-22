@@ -22,8 +22,7 @@ interface HeaderProps {
 }
 
 function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) {
-  
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
     <div className="flex items-center space-x-2">
@@ -73,7 +72,7 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
 
 export default function Header({ selectedYear, onYearChange, onSpotifyClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const years = getYearsList();
   const djList = getDJList();
 
@@ -91,7 +90,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             <Link href="/" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Home
             </Link>
-            <Link href={`/year/${selectedYear}`} className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+            <Link href={`/year`} className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Top2000
             </Link>
             <Link href="/artists" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
@@ -129,15 +128,18 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             <Link href="/contact" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Contact
             </Link>
+            {isAdmin && (
+              <Link href="/admin" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+                Beheerder
+              </Link>
+            )}
           </nav>
 
           {/* Year Selector & Spotify/User */}
           <div className="hidden md:flex items-center space-x-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
-                  {selectedYear} <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
+                
               </DropdownMenuTrigger>
               <DropdownMenuContent className="max-h-96 overflow-y-auto border-red-100">
                 {years.map((year) => (
@@ -176,20 +178,20 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               <Link href="/" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Home
               </Link>
-              <Link href={`/year/${selectedYear}`} className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
+              <Link href={`/year`} className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Top2000
               </Link>
               <Link href="/artists" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Artists
+                Artiesten
               </Link>
               <Link href="/songs" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Songs
+                Nummers
               </Link>
               <Link href="/statistics" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                Statistics
+                Statistieken
               </Link>
               <Link href="/history" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                History
+                Geschiedenis
               </Link>
               <Link href="/faq" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 FAQ
@@ -197,22 +199,12 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               <Link href="/contact" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Contact
               </Link>
+              {isAdmin && (
+                <Link href="/admin" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
+                  Beheerder
+                </Link>
+              )}
             </nav>
-
-            <div className="mt-3 border-t border-red-100 pt-3">
-              <label className="block mb-1 text-neutral-700 text-sm">Year</label>
-              <select
-                value={selectedYear}
-                onChange={(e) => onYearChange(Number(e.target.value))}
-                className="w-full border border-neutral-300 rounded-md px-2 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div className="mt-3 border-t border-red-100 pt-3">
               {isAuthenticated && (
