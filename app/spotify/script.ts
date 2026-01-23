@@ -6,7 +6,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "http://127.0.0.1:1234/");
+    params.append("redirect_uri", "https://project-top2000-frontend-alib.vercel.app/");
     params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-modify-playback-state user-library-read user-library-modify streaming user-read-playback-state");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
