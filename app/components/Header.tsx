@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut, Shield } from 'lucide-react';
 import { FaSpotify } from 'react-icons/fa';
 import { useAuth } from '../auth/AuthProvider';
 import { Button } from './ui/button';
@@ -59,6 +59,16 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
               <DropdownMenuItem asChild>
                 <Link href="/profile">Profiel</Link>
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin" className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="h-4 w-4" />
+                      <span>Beheerder</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => logout()}>
                 <div className="flex items-center space-x-2"><LogOut className="h-4 w-4" /><span>Uitloggen</span></div>
               </DropdownMenuItem>
@@ -128,11 +138,6 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             <Link href="/contact" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
               Contact
             </Link>
-            {isAdmin && (
-              <Link href="/admin" className="px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-                Beheerder
-              </Link>
-            )}
           </nav>
 
           {/* Year Selector & Spotify/User */}
@@ -199,11 +204,6 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
               <Link href="/contact" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
                 Contact
               </Link>
-              {isAdmin && (
-                <Link href="/admin" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50" onClick={() => setMobileMenuOpen(false)}>
-                  Beheerder
-                </Link>
-              )}
             </nav>
 
             <div className="mt-3 border-t border-red-100 pt-3">
@@ -232,6 +232,14 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
                     <Link href="/profile" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm" onClick={() => setMobileMenuOpen(false)}>
                       Profiel
                     </Link>
+                    {isAdmin && (
+                      <Link href="/admin" className="block px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm" onClick={() => setMobileMenuOpen(false)}>
+                        <div className="flex items-center space-x-2">
+                          <Shield className="h-4 w-4" />
+                          <span>Beheerder</span>
+                        </div>
+                      </Link>
+                    )}
                     <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full text-left px-2 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 text-sm">
                       Uitloggen
                     </button>
