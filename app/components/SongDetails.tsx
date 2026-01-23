@@ -13,6 +13,16 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
+import { getAccessToken, getUserPlaylists, createPlaylist, addTracksToPlaylist, searchTrack, fetchProfile, getStoredAccessToken, playSong, saveTracksToLibrary, removeTracksFromLibrary, checkSavedTracks } from "../spotify/script";
+import { Heart } from "lucide-react";
 
 type ChartPointDto = { year: number; position: number };
 
@@ -40,6 +50,12 @@ export default function SongDetails({ songId }: { songId: string }) {
   const [fout, setFout] = useState<string | null>(null);
 
   const [lyricsOpen, setLyricsOpen] = useState(false);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [token, setToken] = useState<string>("");
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [spotifyTrackId, setSpotifyTrackId] = useState<string | null>(null);
 
   const lyricsIsUrl = useMemo(() => {
     const t = (data?.lyrics ?? "").trim();
@@ -103,6 +119,148 @@ export default function SongDetails({ songId }: { songId: string }) {
 
     run();
   }, [songId]);
+
+  useEffect(() => {
+      const initSpotify = async () => {
+          const storedToken = getStoredAccessToken();
+          if (storedToken) {
+              setToken(storedToken);
+              setSpotifyConnected(true);
+              try {
+                  const profile = await fetchProfile(storedToken);
+                  setUserProfile(profile);
+                  const userPlaylists = await getUserPlaylists(storedToken);
+                  console.log("Fetched playlists:", userPlaylists);
+                  setPlaylists(userPlaylists.items || []);
+              } catch (e) {
+                  console.error("Error fetching spotify data with stored token", e);
+              }
+              return;
+          }
+
+          const clientId = "d816f0a407654135816e64bd94c15bf3";
+          const params = new URLSearchParams(window.location.search);
+          const code = params.get("code");
+          
+          if (code) {
+               try {
+                  const accessToken = await getAccessToken(clientId, code);
+                  setToken(accessToken);
+                  setSpotifyConnected(true);
+                  const profile = await fetchProfile(accessToken);
+                  setUserProfile(profile);
+                  const userPlaylists = await getUserPlaylists(accessToken);
+                  console.log("Fetched playlists after login:", userPlaylists);
+                  setPlaylists(userPlaylists.items || []);
+                  // Clear code from URL
+                  window.history.replaceState({}, document.title, window.location.pathname);
+               } catch (e) {
+                   console.error("Error init spotify", e);
+               }
+          }
+      };
+      initSpotify();
+  }, []);
+
+  useEffect(() => {
+      const checkLikeStatus = async () => {
+          if (token && data) {
+              // Build search query with track:{title} artist:{artist} for better accuracy
+              const query = `track:${data.titel} artist:${data.artistName}`;
+              const searchResult = await searchTrack(token, query);
+              if (searchResult.tracks.items.length > 0) {
+                  const trackId = searchResult.tracks.items[0].id;
+                  setSpotifyTrackId(trackId);
+                  const saved = await checkSavedTracks(token, [trackId]);
+                  setIsLiked(saved[0]);
+              }
+          }
+      };
+      if (spotifyConnected && data) {
+          checkLikeStatus();
+      }
+  }, [spotifyConnected, data, token]);
+
+  const handleToggleLike = async () => {
+      if (!token || !spotifyTrackId) return;
+      
+      if (isLiked) {
+          await removeTracksFromLibrary(token, [spotifyTrackId]);
+          setIsLiked(false);
+      } else {
+          await saveTracksToLibrary(token, [spotifyTrackId]);
+          setIsLiked(true);
+      }
+  };
+
+  const handlePlay = async () => {
+      if (token && data) {
+          // Build search query with track:{title} artist:{artist} for better accuracy
+          const query = `track:${data.titel} artist:${data.artistName}`;
+          const searchResult = await searchTrack(token, query);
+          if (searchResult.tracks.items.length > 0) {
+              const trackUri = searchResult.tracks.items[0].uri;
+              await playSong(token, trackUri); 
+          }
+      }
+  };
+
+  const onSpotifyClick = () => {
+      window.location.href = "/spotify";
+  };
+
+  const handleAddToPlaylist = async (playlistId: string | null) => {
+      if (!token || !data) return;
+
+      try {
+          // Use stored track ID if available, otherwise search
+          let trackUri = "";
+          if (spotifyTrackId) {
+              trackUri = `spotify:track:${spotifyTrackId}`;
+          } else {
+              // Build search query with track:{title} artist:{artist} for better accuracy
+              const query = `track:${data.titel} artist:${data.artistName}`;
+              const searchResult = await searchTrack(token, query);
+              
+              if (!searchResult.tracks.items.length) {
+                  alert("Song not found on Spotify!");
+                  return;
+              }
+              trackUri = searchResult.tracks.items[0].uri;
+          }
+          
+          let targetPlaylistId = playlistId;
+
+          // If no playlistId provided, logic for "Top 2000 Favorites"
+          if (!targetPlaylistId) {
+              if (!userProfile) {
+                   const profile = await fetchProfile(token);
+                   setUserProfile(profile);
+              }
+              const profile = userProfile || await fetchProfile(token);
+              
+              // Check if "Top 2000 Favorites" already exists in fetched playlists
+              const existingPlaylist = playlists.find(p => p.name === "Top 2000 Favorites");
+              
+              if (existingPlaylist) {
+                  targetPlaylistId = existingPlaylist.id;
+              } else {
+                  const newPlaylist = await createPlaylist(profile.id, token, "Top 2000 Favorites");
+                  targetPlaylistId = newPlaylist.id;
+                  // Refresh playlists
+                  const userPlaylists = await getUserPlaylists(token);
+                  setPlaylists(userPlaylists.items || []);
+              }
+          }
+
+          await addTracksToPlaylist(targetPlaylistId!, token, [trackUri]);
+          alert("Song added to playlist!");
+
+      } catch (error) {
+          console.error("Error adding to playlist:", error);
+          alert("Failed to add song to playlist.");
+      }
+  };
 
   const chartData = useMemo(() => {
     return [...(data?.chartHistory ?? [])].sort((a, b) => a.year - b.year);
@@ -193,21 +351,51 @@ export default function SongDetails({ songId }: { songId: string }) {
 
             <div className="mt-5 flex items-center justify-between gap-4">
               <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
-                  onClick={() => console.log("Spotify koppelen (dummy)")}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
-                  </svg>
-                </button>
+                {spotifyConnected ? (
+                    <>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
+                      onClick={handlePlay}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
+                      </svg>
+                      Play on Spotify
+                    </button>
+                    
+                    <button
+                        type="button"
+                        onClick={handleToggleLike}
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold shadow active:scale-[0.99] transition ${isLiked ? 'bg-green-100 text-green-600 hover:bg-green-200' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                    >
+                        <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                    </button>
+                    </>
+                ) : (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 font-semibold shadow hover:bg-green-50 active:scale-[0.99] transition"
+                      onClick={onSpotifyClick}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.438 17.438a.75.75 0 01-1.032.246c-2.829-1.73-6.391-2.123-10.588-1.168a.75.75 0 11-.333-1.463c4.568-1.038 8.488-.596 11.602 1.32a.75.75 0 01.351 1.065zm1.473-3.273a.938.938 0 01-1.289.308c-3.238-1.988-8.176-2.566-12.008-1.404a.938.938 0 11-.545-1.795c4.312-1.31 9.666-.66 13.334 1.566a.938.938 0 01.508 1.325zm.126-3.407C15.16 8.49 8.74 8.262 5.134 9.32a1.125 1.125 0 11-.627-2.161c4.136-1.207 11.028-.977 15.38 1.53a1.125 1.125 0 11-1.062 2.07z" />
+                      </svg>
+                      Connect Spotify
+                    </button>
+                )}
 
                 {/* YouTube */}
                 <button
@@ -226,22 +414,57 @@ export default function SongDetails({ songId }: { songId: string }) {
                   </svg>
                 </button>
 
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
-                  onClick={() => console.log("Toevoegen aan playlist (dummy)")}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
-                  </svg>
-                  Toevoegen aan playlist
-                </button>
+                {spotifyConnected ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
+                            >
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                              >
+                                <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
+                              </svg>
+                              Toevoegen aan playlist
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                            <DropdownMenuLabel>Mijn Afspeellijsten</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handleAddToPlaylist(null)}>
+                                <span>Maak 'Top 2000 Favorites'</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {playlists.map((playlist) => (
+                                <DropdownMenuItem key={playlist.id} onClick={() => handleAddToPlaylist(playlist.id)}>
+                                    <span>{playlist.name}</span>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-700 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
+                      onClick={onSpotifyClick}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M11 11V5a1 1 0 112 0v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6z" />
+                      </svg>
+                      Toevoegen aan playlist
+                    </button>
+                )}
               </div>
 
               <div className="flex-shrink-0">

@@ -5,20 +5,78 @@ import Header from "./components/Header";
 import LoadingBar from "react-top-loading-bar";
 import Footer from "./components/Footer";
 import SpotifyPanel from './components/customUI/SpotifySidebar';
+import { useSpotifyPlayer } from './hooks/useSpotifyPlayer';
+import { isSpotifyLoggedIn, getStoredAccessToken, getAccessToken, getUserPlaylists } from './spotify/script';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [spotifyPanelOpen, setSpotifyPanelOpen] = useState(false);
   const [spotifyConnected, setSpotifyConnected] = useState(false);
-  const [currentSong, setCurrentSong] = useState({
-    title: '',
-    artist: '',
-    albumImage: ''
-  });
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [token, setToken] = useState<string | null>(null);
   const loadingRef = useRef<any>(null);
   const pendingRef = useRef<number>(0);
   const originalFetchRef = useRef<typeof fetch | null>(null);
+
+  // Initialize Spotify player with token
+  const {
+    isReady: playerReady,
+    deviceId,
+    playerState,
+    togglePlay,
+    nextTrack,
+    previousTrack,
+    seek,
+    setVolume,
+    error: playerError
+  } = useSpotifyPlayer(token);
+
+  // Handle Spotify OAuth callback AND check existing login on mount
+  useEffect(() => {
+    const handleSpotifyAuth = async () => {
+      // First check if we already have a stored token
+      const storedToken = getStoredAccessToken();
+      console.log("ClientLayout: Checking stored token...", storedToken ? "Found" : "Not found");
+      
+      if (storedToken) {
+        console.log("ClientLayout: Setting token and connected state");
+        setToken(storedToken);
+        setSpotifyConnected(true);
+        try {
+          const userPlaylists = await getUserPlaylists(storedToken);
+          setPlaylists(userPlaylists.items || []);
+        } catch (e) {
+          console.error("Error fetching playlists:", e);
+        }
+        return;
+      }
+
+      // Check for OAuth code in URL (callback from Spotify)
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      
+      if (code) {
+        const clientId = "d816f0a407654135816e64bd94c15bf3";
+        try {
+          const accessToken = await getAccessToken(clientId, code);
+          console.log("Spotify token obtained and saved!");
+          setToken(accessToken);
+          setSpotifyConnected(true);
+          
+          // Fetch playlists with new token
+          const userPlaylists = await getUserPlaylists(accessToken);
+          setPlaylists(userPlaylists.items || []);
+          
+          // Clear code from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+          console.error("Error getting Spotify access token:", e);
+        }
+      }
+    };
+    
+    handleSpotifyAuth();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,13 +107,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }, []);
 
   const handleSpotifyConnect = () => {
-    setSpotifyConnected(true);
-    setCurrentSong({
-      title: 'Bohemian Rhapsody',
-      artist: 'Queen',
-      albumImage: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=400'
-    });
-    setIsPlaying(true);
+    window.location.href = "/spotify";
   };
 
   return (
@@ -76,8 +128,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <SpotifyPanel 
           isOpen={spotifyPanelOpen}
           onClose={() => setSpotifyPanelOpen(false)}
-          isConnected={spotifyConnected}  
+          isConnected={spotifyConnected}
           onConnect={handleSpotifyConnect}
+          playerReady={playerReady}
+          playerState={playerState}
+          onTogglePlay={togglePlay}
+          onNextTrack={nextTrack}
+          onPreviousTrack={previousTrack}
+          onSeek={seek}
+          onVolumeChange={setVolume}
+          playerError={playerError}
+          playlists={playlists}
+          deviceId={deviceId}
         />
     </>
   );
