@@ -7,7 +7,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
     params.append("client_id", clientId);
     params.append("response_type", "code");
     params.append("redirect_uri", "http://127.0.0.1:1234/");
-    params.append("scope", "user-read-private user-read-email playlist-modify-public playlist-modify-private user-modify-playback-state");
+    params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-modify-playback-state user-library-read user-library-modify streaming user-read-playback-state");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
 
@@ -36,13 +36,18 @@ async function generateCodeChallenge(codeVerifier: string) {
 // Start of requesting the user profile
 export async function getAccessToken(clientId: string, code: string): Promise<string> {
     const verifier = localStorage.getItem("verifier");
+    
+    if (!verifier) {
+        console.error("No code verifier found in localStorage");
+        throw new Error("No code verifier found");
+    }
 
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
     params.append("redirect_uri", "http://127.0.0.1:1234/");
-    params.append("code_verifier", verifier!);
+    params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
@@ -50,8 +55,43 @@ export async function getAccessToken(clientId: string, code: string): Promise<st
         body: params
     });
 
-    const { access_token } = await result.json();
+    const data = await result.json();
+    console.log("Spotify token response:", data);
+    
+    if (!result.ok) {
+        console.error("Spotify token error:", data);
+        throw new Error(data.error_description || data.error || "Token exchange failed");
+    }
+    
+    const { access_token, expires_in } = data;
+    
+    if (!access_token) {
+        console.error("No access_token in response:", data);
+        throw new Error("No access token received");
+    }
+    
+    const now = new Date();
+    const expiry = now.getTime() + (expires_in || 3600) * 1000;
+    localStorage.setItem("spotify_access_token", access_token);
+    localStorage.setItem("spotify_token_expiry", expiry.toString());
     return access_token;
+}
+
+export function getStoredAccessToken(): string | null {
+    const token = localStorage.getItem("spotify_access_token");
+    const expiry = localStorage.getItem("spotify_token_expiry");
+    if (!token || !expiry) return null;
+    
+    if (new Date().getTime() > parseInt(expiry)) {
+        localStorage.removeItem("spotify_access_token");
+        localStorage.removeItem("spotify_token_expiry");
+        return null;
+    }
+    return token;
+}
+
+export function isSpotifyLoggedIn(): boolean {
+    return getStoredAccessToken() !== null;
 }
 
 export async function fetchProfile(token: string): Promise<any> {
@@ -92,8 +132,12 @@ export async function addTracksToPlaylist(playlistId: string, accessToken: strin
     return await result.json();
 }
 
-export async function playSong(accessToken: string, trackUri: string) {
-    const result = await fetch(`https://api.spotify.com/v1/me/player/play`, {
+export async function playSong(accessToken: string, trackUri: string, deviceId?: string) {
+    const url = deviceId 
+        ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
+        : `https://api.spotify.com/v1/me/player/play`;
+    
+    const result = await fetch(url, {
         method: "PUT",
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -124,11 +168,65 @@ export async function searchTrack(accessToken: string, query: string) {
 }
 
 export async function getUserPlaylists(accessToken: string) {
-    const result = await fetch(`https://api.spotify.com/v1/me/playlists`, {
+    const result = await fetch(`https://api.spotify.com/v1/me/playlists?limit=50`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+    
+    if (!result.ok) {
+        console.error("Error fetching playlists:", result.status, result.statusText);
+        return { items: [] };
+    }
+    
+    const data = await result.json();
+    console.log("Fetched playlists:", data);
+    return data;
+}
+
+export async function saveTracksToLibrary(accessToken: string, trackIds: string[]) {
+    await fetch(`https://api.spotify.com/v1/me/tracks`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: trackIds })
+    });
+}
+
+export async function removeTracksFromLibrary(accessToken: string, trackIds: string[]) {
+    await fetch(`https://api.spotify.com/v1/me/tracks`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: trackIds })
+    });
+}
+
+export async function checkSavedTracks(accessToken: string, trackIds: string[]) {
+    const result = await fetch(`https://api.spotify.com/v1/me/tracks/contains?ids=${trackIds.join(',')}`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
     });
     return await result.json();
+}
+
+export async function transferPlaybackToDevice(accessToken: string, deviceId: string) {
+    await fetch(`https://api.spotify.com/v1/me/player`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            device_ids: [deviceId],
+            play: false
+        })
+    });
 }

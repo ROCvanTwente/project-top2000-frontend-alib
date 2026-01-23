@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
 import Link from "next/link";
 import { useAuth } from "./auth/AuthProvider";
+import { getAccessToken, getStoredAccessToken, fetchProfile, getUserPlaylists } from "./spotify/script";
 
 // Components import
 import Top5 from "./components/Top5";
@@ -16,6 +17,39 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
   const [userResult, setUserResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+
+  // Handle Spotify OAuth callback
+  useEffect(() => {
+    const handleSpotifyCallback = async () => {
+      // Check if we already have a stored token
+      const storedToken = getStoredAccessToken();
+      if (storedToken) {
+        setSpotifyConnected(true);
+        return;
+      }
+
+      // Check for OAuth code in URL
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      
+      if (code) {
+        const clientId = "d816f0a407654135816e64bd94c15bf3";
+        try {
+          const accessToken = await getAccessToken(clientId, code);
+          console.log("Spotify token obtained and saved!");
+          setSpotifyConnected(true);
+          
+          // Clear code from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+          console.error("Error getting Spotify access token:", e);
+        }
+      }
+    };
+    
+    handleSpotifyCallback();
+  }, []);
 
   useEffect(() => {
     const check = async () => {
@@ -55,7 +89,7 @@ export default function Home() {
       <div className="flex w-full flex-col gap-3" id="MainContent">
         <Carousel />
         {/* <CallToActionCard /> */}
-        <Top5 selectedYear={2024} onSpotifyClick={() => {}} spotifyConnected={false} />
+        <Top5 selectedYear={2024} onSpotifyClick={() => {}} spotifyConnected={spotifyConnected} />
         <QuickInfo />
       </div>
     </main>
