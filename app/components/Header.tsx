@@ -109,7 +109,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
             {/* Bart Arends DJ Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center px-3 py-2 rounded-md text-neutral-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
-                Bart Arends <ChevronDown className="ml-1 h-4 w-4" />
+                Presentatoren <ChevronDown className="ml-1 h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="border-red-100">
                 {djList.map((dj) => (
