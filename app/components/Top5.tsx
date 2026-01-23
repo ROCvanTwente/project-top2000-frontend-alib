@@ -74,7 +74,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
               <span className="text-red-700 font-semibold">Uitgelicht</span>
             </div>
             <Button variant="outline" size="sm" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600" asChild>
-              <Link href={`/year/${selectedYear}`}>
+              <Link href={`/year`}>
                 Volledige Lijst Bekijken
               </Link>
             </Button>

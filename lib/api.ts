@@ -83,6 +83,12 @@ export async function parseApiError(res: Response) {
 
       if (body.errors && typeof body.errors === "object") {
         result.errors = body.errors as Record<string, string[]>;
+      } else if (typeof body === "object" && body !== null) {
+        const keys = Object.keys(body);
+        const looksLikeErrorMap = keys.length > 0 && keys.every((k) => Array.isArray((body as any)[k]));
+        if (looksLikeErrorMap) {
+          result.errors = body as Record<string, string[]>;
+        }
       }
 
       // Normalize errors that use an empty-string key (e.g. { "": ["..."] })
