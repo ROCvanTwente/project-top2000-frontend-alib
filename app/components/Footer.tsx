@@ -8,7 +8,7 @@ export default function Footer() {
           {/* About */}
           <div>
             <Link href="/">
-              <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
+              <img src="/images/logo_roc_opendag.png" alt="Top2000 Logo" className="h-20 w-auto" />
             </Link>
             <p className="text-neutral-300 mt-4 leading-relaxed">
               De ultieme muziekcountdown die de beste nummers aller tijden viert.
