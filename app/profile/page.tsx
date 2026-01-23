@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import Carousel from '../components/customUI/Carousel';
 import { useAuth } from '../auth/AuthProvider';
 import LoadingState from '../components/ui/LoadingState';
+import { isSpotifyLoggedIn, spotifyLogout } from '../spotify/script';
 
 function decodeJwt(token?: string | null): Record<string, any> | null {
   if (!token) return null;
@@ -45,12 +46,7 @@ export default function Profile() {
   }, [claims]);
 
   useEffect(() => {
-    try {
-      const sp = localStorage.getItem('spotifyAccessToken');
-      setSpotifyConnected(!!sp);
-    } catch {
-      setSpotifyConnected(false);
-    }
+    setSpotifyConnected(isSpotifyLoggedIn());
   }, []);
 
   if (!initialized) return <LoadingState title="Profiel laden" subtitle="Even geduld…" />;
@@ -159,7 +155,7 @@ export default function Profile() {
                         </Button>
                       </Link>
                       <Button
-                        onClick={() => { setSpotifyConnected(false); toast.success('Spotify account ontkoppeld'); }}
+                        onClick={() => { spotifyLogout(); setSpotifyConnected(false); toast.success('Spotify account ontkoppeld'); }}
                         variant="outline"
                         className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                       >

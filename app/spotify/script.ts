@@ -94,6 +94,11 @@ export function isSpotifyLoggedIn(): boolean {
     return getStoredAccessToken() !== null;
 }
 
+export function spotifyLogout() {
+    localStorage.removeItem("spotify_access_token");
+    localStorage.removeItem("spotify_token_expiry");
+}
+
 export async function fetchProfile(token: string): Promise<any> {
     const result = await fetch("https://api.spotify.com/v1/me", {
         method: "GET", headers: { Authorization: `Bearer ${token}` }
