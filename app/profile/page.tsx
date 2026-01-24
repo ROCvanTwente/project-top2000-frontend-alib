@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import Carousel from '../components/customUI/Carousel';
 import { useAuth } from '../auth/AuthProvider';
 import LoadingState from '../components/ui/LoadingState';
+import { isSpotifyLoggedIn } from '../spotify/script';
 
 function decodeJwt(token?: string | null): Record<string, any> | null {
   if (!token) return null;
@@ -27,7 +28,6 @@ function decodeJwt(token?: string | null): Record<string, any> | null {
 
 export default function Profile() {
   const { initialized, isAuthenticated, isAdmin, token } = useAuth();
-  const [spotifyConnected, setSpotifyConnected] = useState<boolean>(false);
 
   const claims = useMemo(() => decodeJwt(token), [token]);
   const displayName: string = useMemo(() => {
@@ -43,15 +43,6 @@ export default function Profile() {
   const email: string | undefined = useMemo(() => {
     return claims?.email || claims?.upn || undefined;
   }, [claims]);
-
-  useEffect(() => {
-    try {
-      const sp = localStorage.getItem('spotifyAccessToken');
-      setSpotifyConnected(!!sp);
-    } catch {
-      setSpotifyConnected(false);
-    }
-  }, []);
 
   if (!initialized) return <LoadingState title="Profiel laden" subtitle="Even geduld…" />;
 
@@ -76,6 +67,15 @@ export default function Profile() {
       icon: 'user'
     }
   ];
+
+  const spotifyConnected = isSpotifyLoggedIn();
+
+  const disconnectSpotify = () => {
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_refresh_token');
+    toast.success('Spotify account ontkoppeld');
+    window.location.reload();
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-red-50/30 to-orange-50/20">
@@ -159,7 +159,7 @@ export default function Profile() {
                         </Button>
                       </Link>
                       <Button
-                        onClick={() => { setSpotifyConnected(false); toast.success('Spotify account ontkoppeld'); }}
+                        onClick={() => { disconnectSpotify(); }}
                         variant="outline"
                         className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                       >

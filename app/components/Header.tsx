@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { getYearsList, getDJList } from '../lib/mockData';
+import { getYearsList, getDJList } from '../lib/data';
 
 interface HeaderProps {
   selectedYear: number;
@@ -92,7 +92,7 @@ export default function Header({ selectedYear, onYearChange, onSpotifyClick }: H
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <img src="/images/logo_roc_opendag.png" alt="Top2000 Logo" className="h-20 w-auto" />
+            <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

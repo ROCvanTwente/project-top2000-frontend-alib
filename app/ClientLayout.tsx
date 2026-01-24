@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import Header from "./components/Header";
 import LoadingBar from "react-top-loading-bar";
 import Footer from "./components/Footer";
+import { Toaster } from "./components/ui/sonner";
 import SpotifyPanel from './components/customUI/SpotifySidebar';
 import { useSpotifyPlayer } from './hooks/useSpotifyPlayer';
 import { isSpotifyLoggedIn, getStoredAccessToken, getAccessToken, getUserPlaylists } from './spotify/script';
@@ -34,11 +36,36 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   // Handle Spotify OAuth callback AND check existing login on mount
   useEffect(() => {
     const handleSpotifyAuth = async () => {
+      // Check for OAuth code in URL FIRST (callback from Spotify)
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      
       // First check if we already have a stored token
       const storedToken = getStoredAccessToken();
       console.log("ClientLayout: Checking stored token...", storedToken ? "Found" : "Not found");
       
-      if (storedToken) {
+      // If we have a code but also a stored token, the token was just created - clear the URL and show success
+      if (storedToken && code) {
+        console.log("ClientLayout: Token exists and code in URL - clearing URL");
+        setToken(storedToken);
+        setSpotifyConnected(true);
+        // Clear code from URL immediately to prevent re-use
+        window.history.replaceState({}, document.title, window.location.pathname);
+        toast.success("Succesvol verbonden met Spotify!", {
+          description: "Je kunt nu muziek afspelen via Spotify.",
+          duration: 4000,
+        });
+        try {
+          const userPlaylists = await getUserPlaylists(storedToken);
+          setPlaylists(userPlaylists.items || []);
+        } catch (e) {
+          console.error("Error fetching playlists:", e);
+        }
+        return;
+      }
+      
+      // If we have a stored token but no code, just use the stored token
+      if (storedToken && !code) {
         console.log("ClientLayout: Setting token and connected state");
         setToken(storedToken);
         setSpotifyConnected(true);
@@ -51,12 +78,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         return;
       }
 
-      // Check for OAuth code in URL (callback from Spotify)
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      
-      if (code) {
-        const clientId = "d816f0a407654135816e64bd94c15bf3";
+      // Only if we have a code but NO stored token, exchange it
+      if (code && !storedToken) {
+        const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
         try {
           const accessToken = await getAccessToken(clientId, code);
           console.log("Spotify token obtained and saved!");
@@ -69,8 +93,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           
           // Clear code from URL
           window.history.replaceState({}, document.title, window.location.pathname);
+          
+          toast.success("Succesvol verbonden met Spotify!", {
+            description: "Je kunt nu muziek afspelen via Spotify.",
+            duration: 4000,
+          });
         } catch (e) {
           console.error("Error getting Spotify access token:", e);
+          toast.error("Verbinding met Spotify mislukt", {
+            description: "Probeer het opnieuw.",
+            duration: 4000,
+          });
         }
       }
     };
@@ -112,6 +145,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <>
+      <Toaster />
       <LoadingBar color="var(--primary)" ref={loadingRef} />
 
       <Header

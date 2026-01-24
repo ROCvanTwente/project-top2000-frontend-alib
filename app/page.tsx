@@ -34,7 +34,7 @@ export default function Home() {
       const code = params.get("code");
       
       if (code) {
-        const clientId = "d816f0a407654135816e64bd94c15bf3";
+        const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
         try {
           const accessToken = await getAccessToken(clientId, code);
           console.log("Spotify token obtained and saved!");

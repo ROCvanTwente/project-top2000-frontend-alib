@@ -118,6 +118,9 @@ export function useSpotifyPlayer(token: string | null): UseSpotifyPlayerReturn {
                 setDeviceId(device_id);
                 setIsReady(true);
                 setError(null);
+                try {
+                    localStorage.setItem('spotify_device_id', device_id);
+                } catch {}
                 
                 // Transfer playback to this device
                 transferPlaybackToDevice(token, device_id);
@@ -127,6 +130,10 @@ export function useSpotifyPlayer(token: string | null): UseSpotifyPlayerReturn {
             player.addListener('not_ready', ({ device_id }) => {
                 console.log('Device ID has gone offline:', device_id);
                 setIsReady(false);
+                try {
+                    const stored = localStorage.getItem('spotify_device_id');
+                    if (stored === device_id) localStorage.removeItem('spotify_device_id');
+                } catch {}
             });
 
             // Player state changed
@@ -168,6 +175,9 @@ export function useSpotifyPlayer(token: string | null): UseSpotifyPlayerReturn {
                 playerRef.current.disconnect();
                 playerRef.current = null;
             }
+            try {
+                localStorage.removeItem('spotify_device_id');
+            } catch {}
         };
     }, [token]);
 
