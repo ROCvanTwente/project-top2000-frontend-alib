@@ -4,6 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
   ResponsiveContainer,
   LineChart,
@@ -36,6 +37,7 @@ type SongDetailDto = {
   artistBiography: string | null;
   lyrics: string | null;
   releaseYear: number | null;
+  youtube?: string | null;
   chartHistory: ChartPointDto[];
 };
 
@@ -100,6 +102,7 @@ export default function SongDetails({ songId }: { songId: string }) {
           artistBiography: raw.artistBiography ?? raw.ArtistBiography ?? null,
           lyrics: raw.lyrics ?? raw.Lyrics ?? null,
           releaseYear: raw.releaseYear ?? raw.ReleaseYear ?? null,
+          youtube: raw.youtube ?? raw.Youtube ?? null,  
           chartHistory: (raw.chartHistory ?? raw.ChartHistory ?? []).map(
             (p: any) => ({
               year: p.year ?? p.Year,
@@ -138,7 +141,7 @@ export default function SongDetails({ songId }: { songId: string }) {
               return;
           }
 
-          const clientId = "d816f0a407654135816e64bd94c15bf3";
+          const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
           const params = new URLSearchParams(window.location.search);
           const code = params.get("code");
           
@@ -222,16 +225,16 @@ export default function SongDetails({ songId }: { songId: string }) {
               const query = `track:${data.titel} artist:${data.artistName}`;
               const searchResult = await searchTrack(token, query);
               
-              if (!searchResult.tracks.items.length) {
-                  alert("Song not found on Spotify!");
+                if (!searchResult.tracks.items.length) {
+                  toast.error("Nummer niet gevonden op Spotify.");
                   return;
-              }
+                }
               trackUri = searchResult.tracks.items[0].uri;
           }
           
           let targetPlaylistId = playlistId;
 
-          // If no playlistId provided, logic for "Top 2000 Favorites"
+          // If no playlistId provided, logic for "Top 2000 Favorieten"
           if (!targetPlaylistId) {
               if (!userProfile) {
                    const profile = await fetchProfile(token);
@@ -239,13 +242,13 @@ export default function SongDetails({ songId }: { songId: string }) {
               }
               const profile = userProfile || await fetchProfile(token);
               
-              // Check if "Top 2000 Favorites" already exists in fetched playlists
-              const existingPlaylist = playlists.find(p => p.name === "Top 2000 Favorites");
+              // Check if "Top 2000 Favorieten" already exists in fetched playlists
+              const existingPlaylist = playlists.find(p => p.name === "Top 2000 Favorieten");
               
               if (existingPlaylist) {
                   targetPlaylistId = existingPlaylist.id;
               } else {
-                  const newPlaylist = await createPlaylist(profile.id, token, "Top 2000 Favorites");
+                  const newPlaylist = await createPlaylist(profile.id, token, "Top 2000 Favorieten");
                   targetPlaylistId = newPlaylist.id;
                   // Refresh playlists
                   const userPlaylists = await getUserPlaylists(token);
@@ -253,12 +256,12 @@ export default function SongDetails({ songId }: { songId: string }) {
               }
           }
 
-          await addTracksToPlaylist(targetPlaylistId!, token, [trackUri]);
-          alert("Song added to playlist!");
+            await addTracksToPlaylist(targetPlaylistId!, token, [trackUri]);
+            toast.success("Nummer toegevoegd aan playlist.");
 
       } catch (error) {
           console.error("Error adding to playlist:", error);
-          alert("Failed to add song to playlist.");
+            toast.error("Toevoegen aan playlist mislukt.");
       }
   };
 
@@ -398,21 +401,25 @@ export default function SongDetails({ songId }: { songId: string }) {
                 )}
 
                 {/* YouTube */}
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition"
-                  onClick={() => console.log("YouTube openen (dummy)")}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
+                {data.youtube && (
+                  <a
+                    href={data.youtube}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-red-600 font-semibold shadow hover:bg-red-50 active:scale-[0.99] transition disabled:opacity-50"
+                    onClick={(e) => !data.youtube && e.preventDefault()}
                   >
-                    <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
-                  </svg>
-                </button>
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M23.498 6.186a2.958 2.958 0 00-2.08-2.093C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.418.593A2.958 2.958 0 00.502 6.186 31.87 31.87 0 000 12a31.87 31.87 0 00.502 5.814 2.958 2.958 0 002.08 2.093C4.4 20.5 12 20.5 12 20.5s7.6 0 9.418-.593a2.958 2.958 0 002.08-2.093A31.87 31.87 0 0024 12a31.87 31.87 0 00-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
+                    </svg>
+                  </a>
+                )}
 
                 {spotifyConnected ? (
                     <DropdownMenu>
@@ -436,15 +443,24 @@ export default function SongDetails({ songId }: { songId: string }) {
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel>Mijn Afspeellijsten</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleAddToPlaylist(null)}>
-                                <span>Maak 'Top 2000 Favorites'</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {playlists.map((playlist) => (
-                                <DropdownMenuItem key={playlist.id} onClick={() => handleAddToPlaylist(playlist.id)}>
-                                    <span>{playlist.name}</span>
-                                </DropdownMenuItem>
-                            ))}
+                            {!playlists.find(p => p.name === "Top 2000 Favorieten") && (<>
+                              <DropdownMenuItem onClick={() => handleAddToPlaylist(null)}>
+                                  <span>Maak 'Top 2000 Favorieten'</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                            </>
+                            )}
+                            {playlists
+                              .sort((a, b) => {
+                                if (a.name === "Top 2000 Favorieten") return -1;
+                                if (b.name === "Top 2000 Favorieten") return 1;
+                                return 0;
+                              })
+                              .map((playlist) => (
+                              <DropdownMenuItem key={playlist.id} onClick={() => handleAddToPlaylist(playlist.id)}>
+                                <span className={playlist.name === "Top 2000 Favorieten" ? "font-bold" : ""}>{playlist.name}</span>
+                              </DropdownMenuItem>
+                              ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (

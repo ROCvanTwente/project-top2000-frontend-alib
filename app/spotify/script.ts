@@ -6,7 +6,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "https://project-top2000-frontend-alib.vercel.app/");
+    params.append("redirect_uri", process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URL || "https://project-top2000-frontend-alib.vercel.app/");
     params.append("scope", "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-modify-playback-state user-library-read user-library-modify streaming user-read-playback-state");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
@@ -46,7 +46,7 @@ export async function getAccessToken(clientId: string, code: string): Promise<st
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "https://project-top2000-frontend-alib.vercel.app/");
+    params.append("redirect_uri", process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URL || "https://project-top2000-frontend-alib.vercel.app/");
     params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
@@ -133,8 +133,9 @@ export async function addTracksToPlaylist(playlistId: string, accessToken: strin
 }
 
 export async function playSong(accessToken: string, trackUri: string, deviceId?: string) {
-    const url = deviceId 
-        ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
+    const storedDevice = !deviceId ? localStorage.getItem("spotify_device_id") || undefined : deviceId;
+    const url = storedDevice 
+        ? `https://api.spotify.com/v1/me/player/play?device_id=${storedDevice}`
         : `https://api.spotify.com/v1/me/player/play`;
     
     const result = await fetch(url, {

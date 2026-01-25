@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X, Play, Pause, SkipForward, SkipBack, Volume2, Plus, ListMusic, Info } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Slider } from '../ui/slider';
@@ -71,6 +71,11 @@ export default function SpotifyPanel({
 }: SpotifyPanelProps) {
   const [showPlaylistDialog, setShowPlaylistDialog] = useState(false);
   const [localVolume, setLocalVolume] = useState([playerState?.volume ?? 50]);
+  const [scrubValue, setScrubValue] = useState(0);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [displayPosition, setDisplayPosition] = useState(0);
+  const seekTimer = useRef<NodeJS.Timeout | null>(null);
+  const progressTimer = useRef<NodeJS.Timeout | null>(null);
 
   const currentTrack = playerState?.currentTrack;
   const isPlaying = playerState?.isPlaying ?? false;
@@ -97,15 +102,15 @@ export default function SpotifyPanel({
       const profile = await fetchProfile(token);
       const userPlaylists = await getUserPlaylists(token);
       
-      let targetPlaylist = userPlaylists.items?.find((p: any) => p.name === "Top 2000 Favorites");
+      let targetPlaylist = userPlaylists.items?.find((p: any) => p.name === "Top 2000 Favorieten");
       
       if (!targetPlaylist) {
-        targetPlaylist = await createPlaylist(profile.id, token, "Top 2000 Favorites");
+        targetPlaylist = await createPlaylist(profile.id, token, "Top 2000 Favorieten");
       }
       
       await addTracksToPlaylist(targetPlaylist.id, token, [currentTrack.uri]);
       
-      toast.success(`Added "${currentTrack.name}" to Top 2000 Favorites`, {
+      toast.success(`Added "${currentTrack.name}" to Top 2000 Favorieten`, {
         description: 'Song added successfully',
       });
     } catch (error) {
@@ -141,8 +146,62 @@ export default function SpotifyPanel({
   };
 
   const handleSeek = (value: number[]) => {
-    onSeek?.(value[0]);
+    const v = value[0];
+    setScrubValue(v);
+    setIsScrubbing(true);
+
+    if (seekTimer.current) clearTimeout(seekTimer.current);
+    seekTimer.current = setTimeout(() => {
+      onSeek?.(v);
+      setDisplayPosition(v);
+      setIsScrubbing(false);
+    }, 300);
   };
+
+  const handleSeekCommit = (value: number[]) => {
+    const v = value[0];
+    if (seekTimer.current) clearTimeout(seekTimer.current);
+    onSeek?.(v);
+    setDisplayPosition(v);
+    setIsScrubbing(false);
+  };
+
+  // Keep local scrub value in sync with player updates when not scrubbing
+  useEffect(() => {
+    if (!isScrubbing) {
+      setScrubValue(position);
+      setDisplayPosition(position);
+    }
+  }, [position, isScrubbing]);
+
+  // Keep display position ticking while playing to stay in sync between state updates
+  useEffect(() => {
+    if (!isPlaying || isScrubbing) {
+      if (progressTimer.current) clearInterval(progressTimer.current);
+      progressTimer.current = null;
+      return;
+    }
+
+    if (progressTimer.current) clearInterval(progressTimer.current);
+    progressTimer.current = setInterval(() => {
+      setDisplayPosition((prev) => {
+        const next = prev + 1000;
+        return duration ? Math.min(next, duration) : next;
+      });
+    }, 1000);
+
+    return () => {
+      if (progressTimer.current) clearInterval(progressTimer.current);
+      progressTimer.current = null;
+    };
+  }, [isPlaying, isScrubbing, duration]);
+
+  useEffect(() => {
+    return () => {
+      if (seekTimer.current) clearTimeout(seekTimer.current);
+      if (progressTimer.current) clearInterval(progressTimer.current);
+    };
+  }, []);
 
   if (!isOpen) return null;
 
@@ -241,14 +300,15 @@ export default function SpotifyPanel({
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <Slider
-                      value={[position]}
+                      value={[isScrubbing ? scrubValue : displayPosition]}
                       onValueChange={handleSeek}
+                      onValueCommit={handleSeekCommit}
                       max={duration || 100}
                       step={1000}
                       className="w-full"
                     />
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>{formatTime(position)}</span>
+                      <span>{formatTime(displayPosition)}</span>
                       <span>{formatTime(duration)}</span>
                     </div>
                   </div>
@@ -300,7 +360,7 @@ export default function SpotifyPanel({
                               className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center justify-center space-x-2"
                             >
                               <Plus className="h-4 w-4" />
-                              <span>Add to Top 2000 Favorites</span>
+                              <span>Add to Top 2000 Favorieten</span>
                             </Button>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -309,7 +369,7 @@ export default function SpotifyPanel({
                                 </button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p className="max-w-xs">Adds this song to your "Top 2000 Favorites" playlist (creates it if needed).</p>
+                                <p className="max-w-xs">Adds this song to your "Top 2000 Favorieten" playlist (creates it if needed).</p>
                               </TooltipContent>
                             </Tooltip>
                           </div>

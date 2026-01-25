@@ -8,7 +8,7 @@ export default function Footer() {
           {/* About */}
           <div>
             <Link href="/">
-              <img src="/images/logo_roc_opendag.png" alt="Top2000 Logo" className="h-20 w-auto" />
+              <img src="/images/logo_v2.png" alt="Top2000 Logo" className="h-20 w-auto" />
             </Link>
             <p className="text-neutral-300 mt-4 leading-relaxed">
               De ultieme muziekcountdown die de beste nummers aller tijden viert.
@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-neutral-700 mt-10 pt-8 text-center">
-          <p className="text-neutral-400">&copy; {new Date().getFullYear()} TOP2000. Alle rechten voorbehouden.</p>
+          <p className="text-neutral-400"><s>&copy; {new Date().getFullYear()} TOP2000. Alle rechten voorbehouden.</s> Dit is een schoolproject, niet de echte top2000 website.</p>
         </div>
       </div>
     </footer>
