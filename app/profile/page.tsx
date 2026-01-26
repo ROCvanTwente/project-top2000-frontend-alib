@@ -101,6 +101,40 @@ export default function Profile() {
           </Card>
         </div>
         
+        {/* Quick Access to Playlist */}
+        <div className="mb-12">
+          <div className="mb-6">
+            <h2 className="mb-2 bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+              Mijn Spotify Bibliotheek
+            </h2>
+            <p className="text-neutral-600">
+              Bekijk en beheer je opgeslagen nummers op Spotify
+            </p>
+          </div>
+
+          <Card className="p-8 border-neutral-200">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shrink-0">
+                <ListMusic className="w-10 h-10 text-white" />
+              </div>
+
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="mb-2">Mijn Favoriete Nummers</h3>
+                <p className="text-neutral-600 text-sm mb-4">
+                  Bekijk alle nummers die je hebt opgeslagen in je Spotify bibliotheek en exporteer ze naar een nieuwe Top2000 playlist.
+                </p>
+
+                <Link href="/my-playlist">
+                  <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-md shadow-red-200/50">
+                    <ListMusic className="w-4 h-4 mr-2" />
+                    Bekijk Spotify Bibliotheek
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+        </div>
+
         {/* Spotify Integration Card */}
         <div className="mb-12">
           <div className="mb-6">
@@ -148,10 +182,19 @@ export default function Profile() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   {spotifyConnected ? (
                     <>
-                      <Link href="/spotify">
-                        <Button className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md shadow-green-200/50">
+                      <Link href="/my-playlist">
+                        <Button className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-md shadow-red-200/50">
                           <ListMusic className="w-4 h-4 mr-2" />
-                          Bekijk Spotify/Playlists
+                          Mijn Spotify Bibliotheek
+                        </Button>
+                      </Link>
+                      <Link href="/spotify">
+                        <Button 
+                          variant="outline"
+                          className="w-full sm:w-auto border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400"
+                        >
+                          <FaSpotify className="w-4 h-4 mr-2" />
+                          Spotify Integratie
                         </Button>
                       </Link>
                       <Button

@@ -235,3 +235,32 @@ export async function transferPlaybackToDevice(accessToken: string, deviceId: st
         })
     });
 }
+
+export async function getAllSavedTracks(accessToken: string, onProgress?: (count: number) => void) {
+    let url = 'https://api.spotify.com/v1/me/tracks?limit=50';
+    let allTracks: any[] = [];
+
+    while (url) {
+        const response = await fetch(url, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        
+        if (!response.ok) break;
+
+        const data = await response.json();
+        const items = data.items.map((item: any) => ({
+            title: item.track.name,
+            artist: item.track.artists[0].name,
+            spotifyId: item.track.id,
+            uri: item.track.uri,
+            albumImage: item.track.album.images[0]?.url
+        }));
+
+        allTracks = [...allTracks, ...items];
+        if (onProgress) onProgress(allTracks.length);
+
+        url = data.next;
+    }
+
+    return allTracks;
+}

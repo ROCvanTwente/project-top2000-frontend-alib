@@ -1,11 +1,15 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, Heart } from "lucide-react";
 import Link from "next/link";
 import Carousel from "../components/customUI/Carousel";
+import PlaylistSongCard from "../components/PlaylistSongCard";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 import { useEffect, useMemo, useState } from "react";
+import { usePlaylist } from "../hooks/usePlaylist";
+import { useAuth } from "../auth/AuthProvider";
 
 import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
@@ -33,6 +37,8 @@ const cleanAndLimit = (value: string) =>
 
 export default function Songs() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { isAuthenticated } = useAuth();
+  const { playlistCount, spotifyConnected } = usePlaylist();
 
   const [songs, setSongs] = useState<UISong[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,9 +179,20 @@ export default function Songs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex items-center mb-4">
-            <Search className="h-5 w-5 mr-2 text-gray-600" />
-            <h3>Zoek nummers</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <Search className="h-5 w-5 mr-2 text-gray-600" />
+              <h3>Zoek nummers</h3>
+            </div>
+            
+            {isAuthenticated && spotifyConnected && (
+              <Link href="/my-playlist">
+                <Button variant="outline" className="hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600">
+                  <Heart className="w-4 h-4 mr-2" fill="currentColor" />
+                  Mijn Spotify Bibliotheek ({playlistCount})
+                </Button>
+              </Link>
+            )}
           </div>
 
           <Input
@@ -196,30 +213,19 @@ export default function Songs() {
         </div>
 
         {/* Songs List */}
-        <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-200">
+        {/* Songs Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {displayedSongs.map((song) => (
-            <Link
+            <PlaylistSongCard
               key={song.id}
-              href={`/songDetails/${song.id}`}
-              className="flex items-center space-x-4 p-4 hover:bg-gray-50 transition"
-            >
-              <ImageWithFallback
-                src={song.albumImage}
-                alt={song.title}
-                className="w-16 h-16 rounded object-cover"
-              />
-
-              <div className="flex-1 min-w-0">
-                <h4 className="mb-1 truncate hover:text-red-600 transition">
-                  {song.title}
-                </h4>
-                <p className="text-gray-600 truncate">{song.artist}</p>
-              </div>
-
-              <div className="text-right">
-                <p className="text-gray-600">Uitgebracht: {song.year}</p>
-              </div>
-            </Link>
+              id={song.id.toString()}
+              title={song.title}
+              artist={song.artist}
+              artistId={song.id.toString()} // Will need to be adjusted based on actual API
+              albumImage={song.albumImage}
+              canPlay={false}
+              showAddToPlaylist={true}
+            />
           ))}
         </div>
 

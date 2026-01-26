@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Calendar, Users, Music, TrendingUp, Radio, ArrowUpRight } from 'lucide-react';
 import SongCard from './Songcard';
+import PlaylistSongCard from './PlaylistSongCard';
 import { getYearsList } from '../lib/mockData';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './ImageWithFallback';
@@ -94,7 +95,7 @@ export default function Top5({ selectedYear, onSpotifyClick, spotifyConnected }:
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {data.slice(0, 5).map((song, index) => (
                 <div key={song.songId || index} className="hidden sm:block">
-                  <SongCard
+                  <PlaylistSongCard
                     id={song.songId.toString()}
                     rank={song.position}
                     title={song.titel}
