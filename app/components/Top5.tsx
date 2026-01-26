@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { Calendar, Users, Music, TrendingUp, Radio, ArrowUpRight } from 'lucide-react';
 import SongCard from './Songcard';
-import PlaylistSongCard from './PlaylistSongCard';
-import { getYearsList } from '../lib/mockData';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './ImageWithFallback';
 import { useState, useEffect } from 'react';

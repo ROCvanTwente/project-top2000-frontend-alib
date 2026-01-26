@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { getYearsList, getDJList } from '../lib/mockData';
+import { getYearsList, getDJList } from '../lib/data';
 
 interface HeaderProps {
   selectedYear: number;

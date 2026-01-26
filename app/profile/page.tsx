@@ -28,7 +28,6 @@ function decodeJwt(token?: string | null): Record<string, any> | null {
 
 export default function Profile() {
   const { initialized, isAuthenticated, isAdmin, token } = useAuth();
-  const [spotifyConnected, setSpotifyConnected] = useState<boolean>(false);
 
   const claims = useMemo(() => decodeJwt(token), [token]);
   const displayName: string = useMemo(() => {
@@ -72,6 +71,15 @@ export default function Profile() {
       icon: 'user'
     }
   ];
+
+  const spotifyConnected = isSpotifyLoggedIn();
+
+  const disconnectSpotify = () => {
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_refresh_token');
+    toast.success('Spotify account ontkoppeld');
+    window.location.reload();
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-red-50/30 to-orange-50/20">

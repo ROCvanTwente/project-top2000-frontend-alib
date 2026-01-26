@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-neutral-700 mt-10 pt-8 text-center">
-          <p className="text-neutral-400">&copy; {new Date().getFullYear()} TOP2000. Alle rechten voorbehouden.</p>
+          <p className="text-neutral-400"><s>&copy; {new Date().getFullYear()} TOP2000. Alle rechten voorbehouden.</s> Dit is een schoolproject, niet de echte top2000 website.</p>
         </div>
       </div>
     </footer>

@@ -5,6 +5,7 @@ import LoadingState from "./ui/LoadingState";
 import ErrorState from "./ui/ErrorState";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
   Filter,
   TrendingUp,
@@ -13,6 +14,13 @@ import {
   Sparkles,
   Play,
 } from "lucide-react";
+import {
+  getStoredAccessToken,
+  getAccessToken,
+  fetchProfile,
+  searchTrack,
+  playSong,
+} from "../spotify/script";
 
 type Top2000Entry = {
   songId: number;
@@ -111,14 +119,85 @@ export default function Top2000Table() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
-  // Spotify (dummy - jij koppelt dit aan je echte flow)
-  const [spotifyConnected] = useState(false);
+  // Spotify integratie
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+
   const onSpotifyClick = () => {
-    console.log("Connect spotify clicked");
+    window.location.href = "/spotify";
   };
-  const handlePlay = (songId: number) => {
-    if (!spotifyConnected) onSpotifyClick();
-    else console.log("Play", songId);
+
+  // Init Spotify: gebruik bestaande token of ruil code
+  useEffect(() => {
+    const initSpotify = async () => {
+      const existing = getStoredAccessToken();
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      if (existing) {
+        setToken(existing);
+        setSpotifyConnected(true);
+        try {
+          const p = await fetchProfile(existing);
+          setProfile(p);
+        } catch (e) {
+          console.error("Spotify profiel ophalen mislukt", e);
+        }
+        // als er tóch nog een code in de URL staat, weg ermee
+        if (code) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        return;
+      }
+
+      if (code) {
+        const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
+        try {
+          const accessToken = await getAccessToken(clientId, code);
+          setToken(accessToken);
+          setSpotifyConnected(true);
+          const p = await fetchProfile(accessToken);
+          setProfile(p);
+          toast.success("Succesvol verbonden met Spotify!", {
+            description: "Je kunt nu nummers afspelen.",
+            duration: 4000,
+          });
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (err) {
+          console.error("Spotify token ophalen mislukt", err);
+          toast.error("Verbinden met Spotify mislukt.", {
+            description: "Probeer het opnieuw.",
+            duration: 4000,
+          });
+        }
+      }
+    };
+
+    initSpotify();
+  }, []);
+
+  const handlePlay = async (song: Top2000Entry) => {
+    if (!spotifyConnected || !token) {
+      toast.error("Verbind eerst met Spotify.");
+      onSpotifyClick();
+      return;
+    }
+
+    try {
+      const query = `track:${song.titel} artist:${song.artistName}`;
+      const searchResult = await searchTrack(token, query);
+      if (!searchResult?.tracks?.items?.length) {
+        toast.error("Nummer niet gevonden op Spotify.");
+        return;
+      }
+      const trackUri = searchResult.tracks.items[0].uri;
+      await playSong(token, trackUri);
+      toast.success("Nummer wordt afgespeeld via Spotify.");
+    } catch (e) {
+      console.error("Afspelen via Spotify mislukt", e);
+      toast.error("Afspelen via Spotify mislukt.");
+    }
   };
 
   const fetchYear = async (yr: number) => {
@@ -490,7 +569,7 @@ export default function Top2000Table() {
                     <td className="px-6 py-4">
                       {spotifyConnected ? (
                         <button
-                          onClick={() => handlePlay(song.songId)}
+                          onClick={() => handlePlay(song)}
                           className="inline-flex items-center px-3 py-2 border rounded-lg text-sm hover:bg-green-50 hover:text-green-600 hover:border-green-600"
                         >
                           <Play className="h-4 w-4 mr-1" />
@@ -547,7 +626,7 @@ export default function Top2000Table() {
                 <div className="flex-shrink-0">
                   {spotifyConnected ? (
                     <button
-                      onClick={() => handlePlay(song.songId)}
+                      onClick={() => handlePlay(song)}
                       className="w-10 h-10 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center shadow-md shadow-green-600/40 active:scale-95 transition-transform duration-200"
                     >
                       <Play className="h-5 w-5 text-white ml-0.5" fill="white" />
