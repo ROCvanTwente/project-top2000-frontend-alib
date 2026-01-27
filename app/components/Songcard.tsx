@@ -58,7 +58,7 @@ export default function SongCard({
             <h4 className="mb-1.5 font-semibold">{title}</h4>
           </Link>
           <div className="flex items-center justify-between">
-            <Link href={`/artist/${artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block flex-1 min-w-0">
+            <Link href={`/artistsDetails/${artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block flex-1 min-w-0">
               <p className="line-clamp-1">{artist}</p>
             </Link>
             {!canPlay && (
@@ -77,7 +77,7 @@ export default function SongCard({
                   Afspelen
                 </Button>
               )}
-              <Link href={`/song/${id}`}>
+              <Link href={`/songDetails/${id}`}>
                 <Button size="sm" variant="outline" className="border-neutral-300 hover:bg-red-50 hover:border-red-300 hover:text-red-700">
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
@@ -103,10 +103,10 @@ export default function SongCard({
         
         {/* Title and Artist */}
         <div className="flex-1 min-w-0">
-          <Link href={`/song/${id}`} className="hover:text-red-600 transition-colors duration-200 block">
+          <Link href={`/songDetails/${id}`} className="hover:text-red-600 transition-colors duration-200 block">
             <h4 className="font-semibold line-clamp-1">{title}</h4>
           </Link>
-          <Link href={`/artist/${artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block">
+          <Link href={`/artistsDetails/${artistId}`} className="text-neutral-600 hover:text-red-600 transition-colors duration-200 block">
             <p className="line-clamp-1 text-sm">{artist}</p>
           </Link>
         </div>
@@ -121,7 +121,7 @@ export default function SongCard({
               <Play className="h-5 w-5 text-white ml-0.5" fill="white" />
             </button>
           ) : (
-            <Link href={`/song/${id}`}>
+            <Link href={`/songDetails/${id}`}>
               <div className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center border border-neutral-300 active:scale-95 transition-transform duration-200">
                 <ArrowUpRight className="h-5 w-5 text-neutral-600" />
               </div>
