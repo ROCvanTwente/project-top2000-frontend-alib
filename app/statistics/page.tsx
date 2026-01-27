@@ -95,9 +95,9 @@ const ExpandableCard: React.FC<{
 export default function StatisticsPage() {
     // Search mode: 'year' | 'range' | 'all'
     const [mode, setMode] = useState<'year' | 'range' | 'all'>('year');
-    const [year, setYear] = useState<number>(new Date().getFullYear());
+    const [year, setYear] = useState<number>(2024);
     const [minYear, setMinYear] = useState<number>(2000);
-    const [maxYear, setMaxYear] = useState<number>(new Date().getFullYear());
+    const [maxYear, setMaxYear] = useState<number>(2024);
 
     // top filter: number or 'all' (map 'all' to a large value for the backend)
     const [top, setTop] = useState<number | 'all'>(100);
@@ -133,7 +133,7 @@ export default function StatisticsPage() {
             return arr;
         }
         // 'all' -> use a safe wide range 1950..currentYear
-        const cur = new Date().getFullYear();
+        const cur = 2024;
         const arr: number[] = [];
         for (let y = 1950; y <= cur; y++) arr.push(y);
         return arr;
@@ -409,16 +409,16 @@ export default function StatisticsPage() {
                         {mode === 'year' && (
                             <div className="flex items-center gap-2">
                                 <label className="text-sm">Jaar</label>
-                                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="border px-2 py-1 rounded w-28" />
+                                <input type="number" min={1999} max={2024} value={year} onChange={e => setYear(Number(e.target.value))} className="border px-2 py-1 rounded w-28" />
                             </div>
                         )}
 
                         {mode === 'range' && (
                             <div className="flex items-center gap-2">
                                 <label className="text-sm">Van</label>
-                                <input type="number" value={minYear} onChange={e => setMinYear(Number(e.target.value))} className="border px-2 py-1 rounded w-24" />
+                                <input type="number" min={1999} max={2024} value={minYear} onChange={e => setMinYear(Number(e.target.value))} className="border px-2 py-1 rounded w-24" />
                                 <label className="text-sm">Tot</label>
-                                <input type="number" value={maxYear} onChange={e => setMaxYear(Number(e.target.value))} className="border px-2 py-1 rounded w-24" />
+                                <input type="number" min={1999} max={2024} value={maxYear} onChange={e => setMaxYear(Number(e.target.value))} className="border px-2 py-1 rounded w-24" />
                             </div>
                         )}
 
