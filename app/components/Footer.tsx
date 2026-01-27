@@ -68,12 +68,6 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link href="/playlists" className="text-neutral-300 hover:text-white transition-colors duration-200 flex items-center group">
-                  <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 group-hover:bg-white transition-colors" />
-                  Mijn Afspeellijsten
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
