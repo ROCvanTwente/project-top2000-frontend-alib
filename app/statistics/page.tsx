@@ -92,7 +92,7 @@ const ExpandableCard: React.FC<{
     );
 };
 
-export default function StatistiekenPage() {
+export default function StatisticsPage() {
     // Search mode: 'year' | 'range' | 'all'
     const [mode, setMode] = useState<'year' | 'range' | 'all'>('year');
     const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -155,7 +155,7 @@ export default function StatistiekenPage() {
                 const batchYears = years.slice(i, i + batchSize);
                 const batchPromises = batchYears.map(async (y) => {
                     try {
-                        const res = await fetch(`http://localhost:5237/statistieken/${y}?top=${topParam}`);
+                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/statistieken/${y}?top=${topParam}`);
                         if (!res.ok) {
                             // ignore not found years or other non-critical errors
                             return [] as SongItem[];

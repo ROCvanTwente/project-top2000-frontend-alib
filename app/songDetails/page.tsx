@@ -18,7 +18,7 @@ export default function SongDetails({ params }: { params: Promise<{ id: string }
         const fetchData = async () => {
             try {
                 console.log("Fetching song details for ID:", id);
-                const response = await fetch(`https://localhost:7003/songdetails/${id}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/songdetails/${id}`);
                 const data = await response.json();
                 console.log("Fetched Song Details:", data);
                 setSong(data);
