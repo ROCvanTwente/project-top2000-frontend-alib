@@ -57,7 +57,12 @@ function AuthSpotifyAndUser({ onSpotifyClick }: { onSpotifyClick: () => void }) 
           ) : (
             <>
               <DropdownMenuItem asChild>
-                <Link href="/profile">Profiel</Link>
+                <Link href="/profile" >
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span>Profiel</span>
+                  </div>
+                </Link>
               </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem asChild>
