@@ -152,12 +152,6 @@ export default function Profile() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   {spotifyConnected ? (
                     <>
-                      <Link href="/spotify">
-                        <Button className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md shadow-green-200/50">
-                          <ListMusic className="w-4 h-4 mr-2" />
-                          Bekijk Spotify/Playlists
-                        </Button>
-                      </Link>
                       <Button
                         onClick={() => { disconnectSpotify(); }}
                         variant="outline"
