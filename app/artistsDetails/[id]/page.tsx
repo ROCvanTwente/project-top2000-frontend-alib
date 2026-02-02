@@ -68,7 +68,7 @@ export default function ArtistDetailsPage() {
 
         if (!isMounted) return;
 
-        
+
         setArtist(parsed);
       } catch (e: any) {
         if (!isMounted) return;
@@ -215,44 +215,45 @@ export default function ArtistDetailsPage() {
               {songs.length ? (
                 <div className="space-y-4">
                   {songs.map((song, idx) => (
-                    <div
+                    <Link
+                      href={`/songDetails/${song.songId}`}
                       key={`${song.titel}-${song.releaseYear}-${idx}`}
-                      className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
+                      className="block"
                     >
-                      <div className="flex items-center gap-4">
-                        {/* Song image */}
-                        <ImageWithFallback
-                          src={song.imgUrl?.trim() || "/fallback-song.jpg"}
-                          alt={song.titel}
-                          className="w-14 h-14 rounded-md object-cover flex-shrink-0"
-                        />
+                      <div
+                        className="flex items-center justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          {/* Song image */}
+                          <ImageWithFallback
+                            src={song.imgUrl?.trim() || "/fallback-song.jpg"}
+                            alt={song.titel}
+                            className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                          />
 
-                        {/* Song info */}
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            <Link
-                              href={`/songDetails/${song.songId}`}
-                              className="hover:text-red-600 transition-colors"
-                            >
+                          {/* Song info */}
+                          <div>
+                            <h3 className="font-semibold text-gray-900 transition-colors">
                               {song.titel}
-                            </Link>
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {song.releaseYear}
-                          </p>
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              {song.releaseYear}
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Rank */}
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-red-600">
-                          #{song.highestRank}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Hoogste notering
+                        {/* Rank */}
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-red-600">
+                            #{song.highestRank}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Hoogste notering
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
+
 
                   ))}
                 </div>
@@ -294,7 +295,7 @@ export default function ArtistDetailsPage() {
                       String(artist.stats?.oldestSong?.songId).trim() !== "" ? (
                       <Link
                         href={`/songDetails/${artist.stats.oldestSong?.songId}`}
-                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
+                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors underline"
                       >
                         {artist.stats.oldestSong.titel}
                       </Link>
@@ -316,13 +317,13 @@ export default function ArtistDetailsPage() {
                     </dd>
                   </div>
 
-                  
+
                   {artist.stats?.newestSong?.titel ? (
                     artist.stats?.newestSong?.songId != null &&
                       String(artist.stats?.newestSong?.songId).trim() !== "" ? (
                       <Link
                         href={`/songDetails/${artist.stats.newestSong?.songId}`}
-                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors"
+                        className="inline-block text-sm text-gray-600 mt-1 hover:text-red-600 transition-colors underline"
                       >
                         {artist.stats.newestSong.titel}
                       </Link>
